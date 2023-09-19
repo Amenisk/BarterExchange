@@ -1,0 +1,138 @@
+﻿@page "/registration"
+@inject UserService UserService
+@inject NavigationManager Navigation
+
+
+@if (!UserService.IsAuthorized())
+{
+    <div class="card" style="width: 50%; margin: 100px 25% 0 25%">
+        <div class="card-header">
+            <h3 style="display: flex; justify-content:center">Регистрация</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <br>
+                <label>Введите имя</label>
+                <input @bind-value="reg_name" class="form-control" placeholder="Введите имя" required>
+            </div>
+            <div class="form-group">
+                <br>
+                <label>Введите фамилию</label>
+                <input @bind-value="reg_surname" class="form-control" placeholder="Введите фамилию" required>
+            </div>
+            <div class="form-group">
+                <br>
+                <label>Введите почту</label>
+                <input type="email" @bind-value="reg_email" class="form-control" placeholder="Введите почту" required>
+            </div>
+            <div class="form-group">
+                <br>
+                <label>Введите телефон</label>
+                <input @bind-value="reg_phoneNumber" class="form-control" placeholder="Введите телефон" required>
+            </div>
+            <div class="form-group">
+                <br>
+                <label>Введите пароль</label>
+                <input type="password" @bind-value="reg_pass" class="form-control" placeholder="Введите пароль" required>
+            </div>
+            <div class="form-group">
+                <br>
+                <label>Повторите пароль</label>
+                <input type="password" @bind-value="reg_pass2" class="form-control" placeholder="Повторите пароль" required>
+            </div>
+            <div class="form-group">
+                <button name="regButton" class="btn btn-primary" @onclick=Register style="margin: 10px 35% 0 35%">Зарегистрироваться</button>
+            </div>
+        </div>
+    </div>
+
+    @if (isError)
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+}
+else
+{
+    <div class="modal-body">
+        <h5>Выйдите с аккаунта</h5>
+        <p>Чтобы зарегистрировать новый аккаунт, нужно сначала выйти со своего аккаунта</p>
+        <p><button class="btn btn-secondary popover-test" @onclick=UserService.LogOut>Выйти с аккаунта</button></p>
+    </div>
+}
+
+@code {
+    string reg_name = "";
+    string reg_surname = "";
+    string reg_email = "";
+    string reg_phoneNumber = "";
+    string reg_pass = "";
+    string reg_pass2 = "";
+    bool isError = false;
+    string errorMessage = "";
+
+    private void Register()
+    {
+        if (reg_name != "" && reg_surname != "" && reg_email != "" && reg_phoneNumber != "" && reg_pass != "" && reg_pass2 != "")
+        {
+            if (UserService.CheckEmail(reg_email))
+            {
+                isError = true;
+                errorMessage = "Пользователь с такой почтой уже существует";
+                return;
+            }
+
+            if (UserService.CheckPhoneNumber(reg_phoneNumber))
+            {
+                isError = true;
+                errorMessage = "Пользователь с таким телефонным номером уже существует";
+                return;
+            }
+
+            if (UserService.CheckCorrectEmail(reg_email))
+            {
+                isError = true;
+                errorMessage = "Некорректный Email";
+                return;
+            }
+
+            if(UserService.CheckCorrectPhoneNumber(reg_phoneNumber))
+            {
+                isError = true;
+                errorMessage = "Некорректный номер телефона";
+                return;
+            }
+
+            if (reg_pass == reg_pass2)
+            {
+                User user = new User(reg_name, reg_surname, reg_email, reg_phoneNumber, reg_pass);
+                UserService.RegisterUser(user);
+                UserService.AuthorizeUser(user.Email, user.Password);
+                isError = false;
+                ClearPage();
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Пароли не сходятся!";
+                isError = true;
+            }
+        }
+        else
+        {
+            errorMessage = "Не все поля заполнены!";
+            isError = true;
+        }
+    }
+
+    private void ClearPage()
+    {
+        reg_name = "";
+        reg_surname = "";
+        reg_email = "";
+        reg_phoneNumber = "";
+        reg_pass = "";
+        reg_pass2 = "";
+    }
+}

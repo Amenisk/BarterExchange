@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject UserService UserService
+
+<PageTitle>BarterExchange</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if(UserService.IsAuthorized())
+            {
+                <NavLink href="authorization">@UserService.CurrentUser.Email</NavLink>
+            }
+            else
+            {
+                <NavLink href="authorization">Авторизация</NavLink>
+            }
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private void OnButtonClick()
+    {
+        Navigation.NavigateTo("/authorization");
+    }
+}

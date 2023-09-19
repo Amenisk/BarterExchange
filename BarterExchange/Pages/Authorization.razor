@@ -1,0 +1,81 @@
+﻿@page "/authorization"
+@inject UserService UserService
+@inject NavigationManager Navigation
+
+
+@if (!UserService.IsAuthorized())
+{
+    <div class="card" style="width: 50%; margin: 100px 25% 0 25%">
+        <div class="card-header">
+            <h3 style="display: flex; justify-content:center">Авторизация</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <br>
+                <label>Введите электронную почту или номер телефона</label>
+                <input @bind-value="reg_login" class="form-control" placeholder="Введите имя" required>
+            </div>
+            <div class="form-group">
+                <br>
+                <label>Введите пароль</label>
+                <input type="password" @bind-value="reg_pass" class="form-control" placeholder="Введите пароль" required>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <button name="regButton" class="btn btn-primary" @onclick=Authorize>Авторизироваться</button>
+            </div>
+            <div class="form-group">
+                <NavLink href="/registration" style="display: flex; justify-content:center">Регистрация</NavLink>
+            </div>
+        </div>
+    </div>
+
+    @if (isError)
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+}
+else
+{
+    <div class="modal-body">
+        <h5>Выйдите с аккаунта</h5>
+        <p>Чтобы авторизировать аккаунт, нужно сначала выйти со своего аккаунта</p>
+        <p><button class="btn btn-secondary popover-test" @onclick=UserService.LogOut>Выйти с аккаунта</button></p>
+    </div>
+}
+
+@code {
+    string reg_login = "";
+    string reg_pass = "";
+    bool isError = false;
+    string errorMessage = "";
+
+    private void Authorize()
+    {
+        if (reg_login != "" && reg_pass != "")
+        {
+            if(UserService.AuthorizeUser(reg_login, reg_pass))
+            {
+                Navigation.NavigateTo("/");
+                ClearPage();
+            }
+            else
+            {
+                errorMessage = "Неверный логин или пароль!";
+                isError = true;
+            }
+        }
+        else
+        {
+            errorMessage = "Не все поля заполнены!";
+            isError = true;
+        }
+    }
+
+    private void ClearPage()
+    {
+        reg_login = "";
+        reg_pass = "";
+    }
+}
