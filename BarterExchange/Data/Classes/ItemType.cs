@@ -8,7 +8,15 @@ namespace BarterExchange.Data.Classes
         [BsonIgnoreIfDefault]
         public ObjectId _id;
         public int ItemTypeId { get; set; }
+        public int ItemCategoryId { get; set; }
         public string Title { get; set; }
+        public int Value { get; set; }
 
+        public ItemType(int itemCategoryId, string title, int value)
+        {
+            ItemCategoryId = itemCategoryId;
+            Title = title;
+            Value = value;
+        }
     }
 }

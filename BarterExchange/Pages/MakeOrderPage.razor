@@ -1,0 +1,128 @@
+﻿@page "/makeOrder"
+@inject UserService UserService
+@inject NavigationManager Navigation
+@inject FileSystemService FileSystemService
+@inject ExchangeOrderService ExchangeOrderService
+
+@if(UserService.IsAuthorized())
+{
+    <div class="card" style="width: 50%; margin: 100px 25% 0 25%">
+        <div class="card-header">
+            <h3 style="display: flex; justify-content:center">Создание объявление на обмен</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <MudTextField @bind-Value="title" Label="Название" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+            </div>
+            <div class="card-body">
+                <MudSelect @bind-Value="title_item_category" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                       Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                    @foreach(var s in itemsClasses)
+                    {
+                        <MudSelectItem Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="card-body">
+                <MudSelect @bind-Value="title_item_type" T="string" Label="Выберите тип предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                       Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                    @foreach (var s in itemsClasses)
+                    {
+                        <MudSelectItem Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="form-group">
+                <MudTextField @bind-Value="description" Label="Описание" Immediate="true" Variant="Variant.Filled" Lines="5"></MudTextField>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                    <ButtonTemplate>
+                        <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Image"
+                                   for="@context">
+                            Загрузить фото
+                        </MudButton>
+                    </ButtonTemplate>
+                </MudFileUpload>
+            </div>
+            <div class="form-group">
+                <MudTextField @bind-Value="exchange_description" Label="Цель обмена" Immediate="true" Variant="Variant.Filled" Lines="5"></MudTextField>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <button name="regButton" class="btn btn-primary" @onclick=CreateOrder>Создать объявление</button>
+            </div>
+        </div>
+    </div>
+
+    @if (isError)
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+}
+else
+{
+    <div class="modal-body">
+        <h5>Авторизируйтесь</h5>
+        <p>Чтобы создать объявление для обмена, нужно сначала авторизироваться</p>
+        <p><button class="btn btn-secondary popover-test" @onclick=NavigateToAuthorization>Авторизоваться</button></p>
+    </div>
+}
+
+
+@code {
+        string title = "";
+        string description = "";
+        string exchange_description = "";
+        string title_item_category = "";
+        string title_item_type = "";
+        bool isError;
+        string errorMessage = "";
+        List<string> itemsClasses = new List<string>() { "Мебель", "Еда", "Напитки", "Стройматериалы", };
+        IBrowserFile photo;
+
+        private void UploadFiles(IBrowserFile file)
+        {
+            photo = file;
+        }
+
+        public void NavigateToAuthorization()
+        {
+            Navigation.NavigateTo("/authorization");
+        }
+
+        public async Task CreateOrder()
+        {
+            if(title != "" && description != "" && exchange_description != "" && photo != null && title_item_category != "")
+            {
+                isError = false;
+
+                if(photo.Size > 2097152)
+                {
+                    isError = true;
+                    errorMessage = "Размер фото не может превышать 2 МБ!";
+                }
+
+                var newExchangeOrderId = ExchangeOrderService.GetLastId() + 1;
+
+                Stream stream = photo.OpenReadStream();
+                await FileSystemService.UploadImage(stream, newExchangeOrderId.ToString());
+                stream.Dispose();
+
+                ExchangeOrderService.SaveExchangeOrder(new ExchangeOrder(title, description, exchange_description, 1));
+                //ExchangeOrderService.GetItemTypeIdByTitle(title_item_type));
+        }
+        else
+        {
+            isError = true;
+            errorMessage = "Заполните все поля!";
+        }
+    }
+
+}
+

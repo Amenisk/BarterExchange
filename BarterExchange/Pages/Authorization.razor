@@ -2,6 +2,9 @@
 @inject UserService UserService
 @inject NavigationManager Navigation
 
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
 
 @if (!UserService.IsAuthorized())
 {
@@ -11,20 +14,17 @@
         </div>
         <div class="card-body">
             <div class="form-group">
-                <br>
-                <label>Введите электронную почту или номер телефона</label>
-                <input @bind-value="reg_login" class="form-control" placeholder="Введите имя" required>
+                <MudTextField @bind-Value="reg_login" Label="Электронная почта или номер телефона" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <br>
-                <label>Введите пароль</label>
-                <input type="password" @bind-value="reg_pass" class="form-control" placeholder="Введите пароль" required>
+                <MudTextField @bind-Value="reg_pass" InputType="@PasswordInput" Clearable="true" Immediate="true" Label="Пароль" Variant="Variant.Filled" Adornment="Adornment.End" 
+                AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestClick" AdornmentAriaLabel="Показать пароль"></MudTextField>
             </div>
             <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
                 <button name="regButton" class="btn btn-primary" @onclick=Authorize>Авторизироваться</button>
             </div>
             <div class="form-group">
-                <NavLink href="/registration" style="display: flex; justify-content:center">Регистрация</NavLink>
+                <NavLink href="/registration" style="display: flex; justify-content:center; margin: 3% 0 0 0">Регистрация</NavLink>
             </div>
         </div>
     </div>
@@ -46,10 +46,13 @@ else
 }
 
 @code {
-    string reg_login = "";
+    string reg_login  = "";
     string reg_pass = "";
     bool isError = false;
     string errorMessage = "";
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     private void Authorize()
     {
@@ -70,6 +73,22 @@ else
         {
             errorMessage = "Не все поля заполнены!";
             isError = true;
+        }
+    }
+
+    void ButtonTestClick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
         }
     }
 

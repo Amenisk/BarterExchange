@@ -3,14 +3,14 @@ using MongoDB.Bson;
 
 namespace BarterExchange.Data.Classes
 {
-    public class ItemClass
+    public class ItemCategory
     {
         [BsonIgnoreIfDefault]
         public ObjectId _id;
         public int ItemClassId { get; set; }
         public string Title { get; set; }
 
-        public ItemClass(string title) 
+        public ItemCategory(string title) 
         {
             Title = title;
         }

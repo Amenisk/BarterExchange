@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 namespace BarterExchange.Data.Classes
 {
@@ -37,6 +38,47 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<User>("Users");
 
             return collection.Find(x => x.PhoneNumber == phoneNumber && x.Password == password).FirstOrDefault();
+        }
+
+        public static async Task UploadImageToDbAsync(Stream fs, string name)
+        {
+            var gridFS = new GridFSBucket(database);
+
+            await gridFS.UploadFromStreamAsync(name, fs);
+        }
+
+        public static string DownloadToLocal(string name)
+        {
+            var gridFS = new GridFSBucket(database);
+            using (FileStream fs = new FileStream($"{Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/wwwroot/Images/")}{name}", FileMode.OpenOrCreate))
+            {
+                gridFS.DownloadToStreamByName(name, fs);
+            }
+
+            return $"Images/{name}";
+        }
+
+        public static ExchangeOrder GetLastExchangeOrder()
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var list = collection.Find(x => x.Title != null).ToList();
+            list.Reverse();
+
+            return list.FirstOrDefault();
+        }
+
+        public static void SaveExchangeOrder(ExchangeOrder order)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+
+            collection.InsertOne(order);
+        }
+
+        public static ItemType GetItemTypeByTitle(string title)
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+
+            return collection.Find(x => x.Title == title).FirstOrDefault();
         }
     }
 }

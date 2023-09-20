@@ -2,6 +2,9 @@
 @inject UserService UserService
 @inject NavigationManager Navigation
 
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
 
 @if (!UserService.IsAuthorized())
 {
@@ -11,37 +14,23 @@
         </div>
         <div class="card-body">
             <div class="form-group">
-                <br>
-                <label>Введите имя</label>
-                <input @bind-value="reg_name" class="form-control" placeholder="Введите имя" required>
+                <MudTextField @bind-Value="reg_name" Label="Имя" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <br>
-                <label>Введите фамилию</label>
-                <input @bind-value="reg_surname" class="form-control" placeholder="Введите фамилию" required>
+                <MudTextField @bind-Value="reg_surname" Label="Фамилия" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <br>
-                <label>Введите почту</label>
-                <input type="email" @bind-value="reg_email" class="form-control" placeholder="Введите почту" required>
+                <MudTextField @bind-Value="reg_email" Label="Электронная почта" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <br>
-                <label>Введите телефон</label>
-                <input @bind-value="reg_phoneNumber" class="form-control" placeholder="Введите телефон" required>
+                <MudTextField @bind-Value="reg_phoneNumber" Label="Номер телефона" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <br>
-                <label>Введите пароль</label>
-                <input type="password" @bind-value="reg_pass" class="form-control" placeholder="Введите пароль" required>
+                <MudTextField @bind-Value="reg_pass" InputType="@PasswordInput" Clearable="true" Immediate="true" Label="Пароль" Variant="Variant.Filled" Adornment="Adornment.End"
+                          AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestClick" AdornmentAriaLabel="Показать пароль"></MudTextField>
             </div>
-            <div class="form-group">
-                <br>
-                <label>Повторите пароль</label>
-                <input type="password" @bind-value="reg_pass2" class="form-control" placeholder="Повторите пароль" required>
-            </div>
-            <div class="form-group">
-                <button name="regButton" class="btn btn-primary" @onclick=Register style="margin: 10px 35% 0 35%">Зарегистрироваться</button>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <button name="regButton" class="btn btn-primary" @onclick=Register>Зарегистрироваться</button>
             </div>
         </div>
     </div>
@@ -68,13 +57,16 @@ else
     string reg_email = "";
     string reg_phoneNumber = "";
     string reg_pass = "";
-    string reg_pass2 = "";
     bool isError = false;
     string errorMessage = "";
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
 
     private void Register()
     {
-        if (reg_name != "" && reg_surname != "" && reg_email != "" && reg_phoneNumber != "" && reg_pass != "" && reg_pass2 != "")
+        if (reg_name != "" && reg_surname != "" && reg_email != "" && reg_phoneNumber != "" && reg_pass != "")
         {
             if (UserService.CheckEmail(reg_email))
             {
@@ -104,25 +96,33 @@ else
                 return;
             }
 
-            if (reg_pass == reg_pass2)
-            {
-                User user = new User(reg_name, reg_surname, reg_email, reg_phoneNumber, reg_pass);
-                UserService.RegisterUser(user);
-                UserService.AuthorizeUser(user.Email, user.Password);
-                isError = false;
-                ClearPage();
-                Navigation.NavigateTo("/");
-            }
-            else
-            {
-                errorMessage = "Пароли не сходятся!";
-                isError = true;
-            }
+            User user = new User(reg_name, reg_surname, reg_email, reg_phoneNumber, reg_pass);
+            UserService.RegisterUser(user);
+            UserService.AuthorizeUser(user.Email, user.Password);
+            isError = false;
+            ClearPage();
+            Navigation.NavigateTo("/");
         }
         else
         {
             errorMessage = "Не все поля заполнены!";
             isError = true;
+        }
+    }
+
+    void ButtonTestClick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
         }
     }
 
@@ -133,6 +133,5 @@ else
         reg_email = "";
         reg_phoneNumber = "";
         reg_pass = "";
-        reg_pass2 = "";
     }
 }
