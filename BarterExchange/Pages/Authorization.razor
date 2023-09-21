@@ -2,10 +2,6 @@
 @inject UserService UserService
 @inject NavigationManager Navigation
 
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-<link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-
-
 @if (!UserService.IsAuthorized())
 {
     <div class="card" style="width: 50%; margin: 100px 25% 0 25%">

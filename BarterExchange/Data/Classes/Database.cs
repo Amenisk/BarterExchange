@@ -80,5 +80,49 @@ namespace BarterExchange.Data.Classes
 
             return collection.Find(x => x.Title == title).FirstOrDefault();
         }
+
+        public static void SaveItemCategory(ItemCategory category)
+        {
+            var collection = database.GetCollection<ItemCategory>("ItemCategories");
+
+            collection.InsertOne(category);
+        }
+
+        public static ItemCategory GetLastItemCategory()
+        {
+            var collection = database.GetCollection<ItemCategory>("ItemCategories");
+            var list = collection.Find(x => x.Title != null).ToList();
+            list.Reverse();
+
+            return list.FirstOrDefault();
+        }
+
+        public static ItemCategory GetItemCategoryByTitle(string title)
+        {
+            var collection = database.GetCollection<ItemCategory>("ItemCategories");
+
+            return collection.Find(x => x.Title == title).FirstOrDefault();
+        }
+
+        public static bool CheckPresenceItemTypeByItemCategoryId(int itemCategoryId)
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+
+            return collection.Find(x => x.ItemCategoryId == itemCategoryId).FirstOrDefault() != null;
+        }
+
+        public static List<ItemCategory> GetAllItemCategory()
+        {
+            var collection = database.GetCollection<ItemCategory>("ItemCategories");
+
+            return collection.Find(x => x.Title != null).ToList<ItemCategory>();
+        }
+
+        public static void DeleteItemCategoryByTitle(string title)
+        {
+            var collection = database.GetCollection<ItemCategory>("ItemCategories");
+
+            collection.DeleteOne(x => x.Title == title);
+        }
     }
 }

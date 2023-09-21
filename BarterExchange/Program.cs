@@ -13,6 +13,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<FileSystemService>();
 builder.Services.AddSingleton<ExchangeOrderService>();
+builder.Services.AddSingleton<ItemService>();
 builder.Services.AddMudServices();
 
 var app = builder.Build();

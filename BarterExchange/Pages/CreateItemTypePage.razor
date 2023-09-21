@@ -1,0 +1,32 @@
+﻿@page "/create-item-type"
+
+<div class="card" style="width: 40%; margin: 100px 30% 0 30%">
+    <div class="card-header">
+        <h3 style="display: flex; justify-content:center; align-content: center">Добавление нового типа предмета</h3>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <div class="card-body">
+                <MudSelect @bind-Value="title_item_category" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                           Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                    @foreach (var s in allTitlesItemCategories)
+                    {
+                        <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        </div>
+        <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
+            <button name="regButton" class="btn btn-primary" @onclick=CreateType>Добавить тип</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    string title_item_category = "";
+
+    public void CreateType()
+    {
+        
+    }
+}
