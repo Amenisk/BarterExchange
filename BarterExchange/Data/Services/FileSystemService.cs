@@ -10,9 +10,9 @@ namespace BarterExchange.Data.Services
            await Database.UploadImageToDbAsync(fs, name);
         }
 
-        public string DownloadImage(string name)
+        public void DownloadImage(string name)
         {
-            return Database.DownloadToLocal(name);
+            Database.DownloadToLocal(name);
         }
     }
 }

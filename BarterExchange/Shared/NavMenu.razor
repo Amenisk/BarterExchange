@@ -2,7 +2,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Бартерный обмен</a>
+        <a class="navbar-brand" href="main-page">Бартерный обмен</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,12 +14,12 @@
     <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
         <nav class="flex-column">
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="main-page" Match="NavLinkMatch.All">
                     <span class="oi oi-home" aria-hidden="true"></span> Главная страница
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="makeOrder">
+                <NavLink class="nav-link" href="make-order">
                     <span class="oi oi-plus" aria-hidden="true"></span> Создать обмен
                 </NavLink>
             </div>
@@ -41,8 +41,8 @@ else
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="make-order">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Создать обмен
+                <NavLink class="nav-link" href="create-item-type">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Создать тип
                 </NavLink>
             </div>
             <div class="nav-item px-3">
@@ -60,8 +60,19 @@ else
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Storage.Nav = this;
+    }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    public void Reload()
+    {
+        base.StateHasChanged();
     }
 }

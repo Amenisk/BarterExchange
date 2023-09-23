@@ -1,4 +1,5 @@
 ﻿@page "/create-item-type"
+@inject ItemService ItemService
 
 <div class="card" style="width: 40%; margin: 100px 30% 0 30%">
     <div class="card-header">
@@ -7,7 +8,7 @@
     <div class="card-body">
         <div class="form-group">
             <div class="card-body">
-                <MudSelect @bind-Value="title_item_category" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                <MudSelect @bind-Value="selectedTitleItemCategory1" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
                            Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
                     @foreach (var s in allTitlesItemCategories)
                     {
@@ -16,17 +17,236 @@
                 </MudSelect>
             </div>
         </div>
+        <div class="form-group">
+            <MudTextField @bind-Value="titleItemType" Label="Название типа предмета" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+        </div>
+        <div class="form-group">
+            <MudTextField @bind-Value="valueType1" HelperText="Натуральное число" HelperTextOnFocus="true" Label="Ценность типа предмета" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+        </div>
         <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
             <button name="regButton" class="btn btn-primary" @onclick=CreateType>Добавить тип</button>
         </div>
     </div>
 </div>
 
+@if (isError && numberAlert == 1)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+<div class="card" style="width: 40%; margin: 100px 30% 0 30%">
+    <div class="card-header">
+        <h3 style="display: flex; justify-content:center; align-content: center">Изменение ценности типа предмета</h3>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <div class="card-body">
+                <MudSelect @bind-Value="selectedTitlIteCategory2" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                           Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" SelectedValuesChanged="() => UpdateTypesList(1)">
+                    @foreach (var s in allTitlesItemCategories)
+                    {
+                        <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="card-body">
+                <MudSelect @bind-Value="selectedTitleItemType1" T="string" Label="Тип предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                           Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                    @foreach (var s in titlesItemTypes1)
+                    {
+                        <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        </div>
+        <div class="form-group">
+            <MudTextField @bind-Value="valueType2" HelperText="Натуральное число" HelperTextOnFocus="true" Label="Ценность типа предмета" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+        </div>
+        <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
+            <button name="regButton" class="btn btn-primary" @onclick=EditType>Редактировать тип</button>
+        </div>
+    </div>
+</div>
+
+@if (isError && numberAlert == 2)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+<div class="card" style="width: 40%; margin: 100px 30% 0 30%">
+    <div class="card-header">
+        <h3 style="display: flex; justify-content:center; align-content: center">Изменение ценности типа предмета</h3>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <div class="card-body">
+                <MudSelect @bind-Value="selectedTitleItemCategory3" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                           Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" SelectedValuesChanged="() => UpdateTypesList(2)">
+                    @foreach (var s in allTitlesItemCategories)
+                    {
+                        <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="card-body">
+                <MudSelect @bind-Value="selectedTitleItemType2" T="string" Label="Тип предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                           Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                    @foreach (var s in titlesItemTypes2)
+                    {
+                        <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        </div>
+        <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
+            <button name="regButton" class="btn btn-primary" @onclick=DeleteType>Удалить тип</button>
+        </div>
+    </div>
+</div>
+
+@if (isError && numberAlert == 3)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
 @code {
-    string title_item_category = "";
+    string selectedTitleItemCategory1 = "";
+    string selectedTitlIteCategory2 = "";
+    string selectedTitleItemCategory3 = "";
+    string titleItemType = "";
+    string selectedTitleItemType1 = "";
+    string selectedTitleItemType2 = "";
+    string valueType1 = "";
+    string valueType2 = "";
+    List<string> allTitlesItemCategories = new List<string>();
+    List<string> titlesItemTypes1 = new List<string>();
+    List<string> titlesItemTypes2 = new List<string>();
+    bool isError;
+    string errorMessage = "";
+    int numberAlert;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        allTitlesItemCategories = ItemService.GetTitlesItemCategories();
+    }
+
+    private void UpdateTypesList(int numberList)
+    {
+        if(numberList == 1)
+        {
+            selectedTitleItemType1 = "";
+            titlesItemTypes1 = ItemService.GetTitlesItemTypesByCategory
+                (ItemService.GetItemCategoryByTitle(selectedTitlIteCategory2).ItemCategoryId);
+        }
+        else
+        {
+            selectedTitleItemType2 = "";
+            titlesItemTypes2 = ItemService.GetTitlesItemTypesByCategory
+                (ItemService.GetItemCategoryByTitle(selectedTitleItemCategory3).ItemCategoryId);
+        }
+    }
 
     public void CreateType()
     {
-        
+        int value;
+        ResetAlert();
+
+        if (selectedTitleItemCategory1 == "")
+        {
+            CreateAlert(1, "Выберите категорию предмета, к которому будет относится тип!");
+            return;
+        }
+
+        if (titleItemType == "" || valueType1 == "")
+        {
+            CreateAlert(1, "Не все поля заполнены!");
+            return;
+        }
+
+        if (!int.TryParse(valueType1, out value) || !(value == Math.Truncate((double)value)))
+        {
+            CreateAlert(1, "Ценность типа предмета должна быть натуральным числом!");
+            return;
+        }
+
+        if (ItemService.CheckItemType(titleItemType))
+        {
+            CreateAlert(1, "Тип предмета с таким названием уже существует!");
+            return;
+        }
+
+        ItemService.CreateItemType(new ItemType(ItemService.GetItemCategoryByTitle(selectedTitlIteCategory2).ItemCategoryId,
+            titleItemType, value));
+        selectedTitleItemCategory1 = "";
+        titleItemType = "";
+        valueType1 = "";
+    }
+
+    public void EditType()
+    {
+        int value;
+        ResetAlert();
+
+        if (selectedTitlIteCategory2 == "" || selectedTitleItemType1 == "")
+        {
+            CreateAlert(2, "Выберите категорию и тип предмета!");
+            return;
+        }
+
+        if (valueType2 == "")
+        {
+            CreateAlert(2, "Заполните поле ценности!");
+            return;
+        }
+
+        if (!int.TryParse(valueType2, out value) || !(value == Math.Truncate((double)value)))
+        {
+            CreateAlert(2, "Ценность типа предмета должна быть натуральным числом!");
+            return;
+        }
+
+        ItemService.EditItemType(selectedTitleItemType1, value);
+        selectedTitlIteCategory2 = "";
+        selectedTitleItemType1 = "";
+        valueType2 = "";
+    }
+
+    public void DeleteType()
+    {
+        ResetAlert();
+
+        if (selectedTitleItemCategory3 == "" || selectedTitleItemType2 == "")
+        {
+            CreateAlert(3, "Выберите категорию и тип предмета!");
+            return;
+        }
+
+        ItemService.DeleteItemType(selectedTitleItemType2);
+        selectedTitleItemCategory3 = "";
+        selectedTitleItemType2 = "";
+    }
+
+    public void CreateAlert(int numAlert, string message)
+    {
+        isError = true;
+        numberAlert = numAlert;
+        errorMessage = message;
+    }
+
+    public void ResetAlert()
+    {
+        isError = false;
+        numberAlert = 0;
     }
 }

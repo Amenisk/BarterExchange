@@ -7,7 +7,7 @@
     </div>
     <div class="card-body">
         <div class="form-group">
-            <MudTextField @bind-Value="title_item_category" Label="Название категории" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+            <MudTextField @bind-Value="titleItemCategory" Label="Название категории" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
         </div>
         <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
             <button name="regButton" class="btn btn-primary" @onclick=CreateCategory>Создать категорию</button>
@@ -22,7 +22,7 @@
     <div class="card-body">
         <div class="form-group">
             <div class="card-body">
-                <MudSelect @bind-Value="title_deleted_item_category" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                <MudSelect @bind-Value="titleDeletedItemCategory" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
                            Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
                     @foreach (var s in allTitlesItemCategories)
                     {
@@ -45,8 +45,8 @@
 }
 
 @code {
-    string title_item_category = "";
-    string title_deleted_item_category = "";
+    string titleItemCategory = "";
+    string titleDeletedItemCategory = "";
     bool isError = false;
     string errorMessage = "";
     List<string> allTitlesItemCategories = new List<string>();
@@ -61,13 +61,13 @@
     {
         isError = false;
 
-        if(title_item_category != "")
+        if (titleItemCategory != "")
         {
-            if(!ItemService.CheckItemCategory(title_item_category))
+            if (!ItemService.CheckItemCategory(titleItemCategory))
             {
-                ItemService.SaveItemCategory(new ItemCategory(title_item_category));
+                ItemService.CreateItemCategory(new ItemCategory(titleItemCategory));
                 allTitlesItemCategories = ItemService.GetTitlesItemCategories();
-                title_item_category = "";
+                titleItemCategory = "";
             }
             else
             {
@@ -86,14 +86,16 @@
     {
         isError = false;
 
-        if(ItemService.CheckItemCategoryBeforeDelete(title_deleted_item_category))
+        if (ItemService.CheckItemCategoryBeforeDelete(titleDeletedItemCategory))
         {
             isError = true;
             errorMessage = "Перед удалением категории удалите все типы предметов, связанных с этой категорией";
         }
-
-        ItemService.DeleteCategory(title_deleted_item_category);
-        allTitlesItemCategories = ItemService.GetTitlesItemCategories();
-        title_deleted_item_category = "";
+        else
+        {
+            ItemService.DeleteItemCategory(titleDeletedItemCategory);
+            allTitlesItemCategories = ItemService.GetTitlesItemCategories();
+            titleDeletedItemCategory = "";
+        }     
     }
 }

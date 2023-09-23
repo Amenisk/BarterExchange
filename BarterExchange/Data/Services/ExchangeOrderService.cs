@@ -30,5 +30,10 @@ namespace BarterExchange.Data.Services
 
             return itemType.ItemTypeId;
         }
+
+        public List<ExchangeOrder> GetAllExchangeOrders() 
+        {
+            return Database.GetAllExchangeOrders(); 
+        }
     }
 }

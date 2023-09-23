@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using static MudBlazor.CategoryTypes;
 
 namespace BarterExchange.Data.Classes
 {
@@ -47,15 +48,13 @@ namespace BarterExchange.Data.Classes
             await gridFS.UploadFromStreamAsync(name, fs);
         }
 
-        public static string DownloadToLocal(string name)
+        public static void DownloadToLocal(string name)
         {
             var gridFS = new GridFSBucket(database);
             using (FileStream fs = new FileStream($"{Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/wwwroot/Images/")}{name}", FileMode.OpenOrCreate))
             {
                 gridFS.DownloadToStreamByName(name, fs);
             }
-
-            return $"Images/{name}";
         }
 
         public static ExchangeOrder GetLastExchangeOrder()
@@ -97,6 +96,15 @@ namespace BarterExchange.Data.Classes
             return list.FirstOrDefault();
         }
 
+        public static ItemType GetLastItemType()
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+            var list = collection.Find(x => x.Title != null).ToList();
+            list.Reverse();
+
+            return list.FirstOrDefault();
+        }
+
         public static ItemCategory GetItemCategoryByTitle(string title)
         {
             var collection = database.GetCollection<ItemCategory>("ItemCategories");
@@ -111,11 +119,24 @@ namespace BarterExchange.Data.Classes
             return collection.Find(x => x.ItemCategoryId == itemCategoryId).FirstOrDefault() != null;
         }
 
-        public static List<ItemCategory> GetAllItemCategory()
+        public static List<ItemCategory> GetAllItemCategories()
         {
             var collection = database.GetCollection<ItemCategory>("ItemCategories");
 
-            return collection.Find(x => x.Title != null).ToList<ItemCategory>();
+            return collection.Find(x => x.Title != null).ToList();
+        }
+        public static List<ItemType> GetAllItemTypes()
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+
+            return collection.Find(x => x.Title != null).ToList();
+        }
+
+        public static List <ItemType> GetItemTypesByCategory(int itemCategoryId) 
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+
+            return collection.Find(x => x.ItemCategoryId == itemCategoryId).ToList();
         }
 
         public static void DeleteItemCategoryByTitle(string title)
@@ -123,6 +144,35 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<ItemCategory>("ItemCategories");
 
             collection.DeleteOne(x => x.Title == title);
+        }
+
+        public static void SaveItemType(ItemType type)
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+
+            collection.InsertOne(type);
+        }
+
+        public static void EditValueItemType(string title, int value)
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+            var filter = Builders<ItemType>.Filter.Eq("Title", title);
+            var update = Builders<ItemType>.Update.Set("Value", value);
+
+            collection.UpdateOne(filter, update);
+        }
+        public static void DeleteItemTypeByTitle(string title)
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+
+            collection.DeleteOne(x => x.Title == title);
+        }
+
+        public static List<ExchangeOrder> GetAllExchangeOrders()
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+
+            return collection.Find(x => x.Title != null).ToList();
         }
     }
 }

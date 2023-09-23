@@ -4,7 +4,7 @@ namespace BarterExchange.Data.Services
 {
     public class ItemService
     {
-        public int GetLastId()
+        public int GetLastCategoryId()
         {
             var category = Database.GetLastItemCategory();
 
@@ -18,9 +18,9 @@ namespace BarterExchange.Data.Services
             }
         }
 
-        public void SaveItemCategory(ItemCategory category)
+        public void CreateItemCategory(ItemCategory category)
         {
-            category.ItemCategoryId = GetLastId() + 1;
+            category.ItemCategoryId = GetLastCategoryId() + 1;
 
             Database.SaveItemCategory(category);
         }
@@ -39,23 +39,77 @@ namespace BarterExchange.Data.Services
             return Database.CheckPresenceItemTypeByItemCategoryId(category.ItemCategoryId);
         }
 
-        public List<string> GetTitlesItemCategories() 
+        public List<string> GetTitlesItemCategories()
         {
-            var list = new List<string>();  
-            var categoriesList = Database.GetAllItemCategory();
+            var list = new List<string>();
+            var categoriesList = Database.GetAllItemCategories();
 
             foreach (var c in categoriesList)
             {
                 list.Add(c.Title);
             }
 
+            return list;
+        }
+
+        public void DeleteItemCategory(string title)
+        {
+            Database.DeleteItemCategoryByTitle(title);
+        }
+
+        public int GetLastTypeId()
+        {
+            var type = Database.GetLastItemType();
+
+            if (type == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return type.ItemTypeId;
+            }
+        }
+
+        public void CreateItemType(ItemType type)
+        {
+            type.ItemTypeId = GetLastTypeId() + 1;
+
+            Database.SaveItemType(type);    
+        }
+
+        public ItemCategory GetItemCategoryByTitle(string title)
+        {
+            return Database.GetItemCategoryByTitle(title);
+        }
+        public bool CheckItemType(string title)
+        {
+            var type = Database.GetItemTypeByTitle(title);
+
+            return type != null;
+        }
+
+        public List<string> GetTitlesItemTypesByCategory(int itemCategoryId)
+        {
+            var list = new List<string>();
+            var typesList = Database.GetItemTypesByCategory(itemCategoryId);
+
+            foreach (var c in typesList)
+            {
+                list.Add(c.Title);
+            }
 
             return list;
         }
 
-        public void DeleteCategory(string title)
+        public void EditItemType(string title, int value)
+        { 
+            Database.EditValueItemType(title, value);
+        }
+
+        public void DeleteItemType(string title) 
         {
-            Database.DeleteItemCategoryByTitle(title);
+            Database.DeleteItemTypeByTitle(title);
         }
     }
 }

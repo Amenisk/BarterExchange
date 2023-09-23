@@ -1,7 +1,37 @@
 ﻿@page "/main-page"
+@inject ExchangeOrderService ExchangeOrderService
+@inject FileSystemService FileSystemService
 
-<h3>MainPage</h3>
+<div class="card-header">
+    <h3 style="display: flex; justify-content:center">Главная страница</h3>
+</div>
+<div class="card-group" style="width: 100%; margin: 10px 0 0 0" >
+    @foreach (var exch in allExchangeOrders)
+    {
+        <MudCard Outlined="true" style="width: 280; margin: 2%">
+            <MudCardContent>
+                <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+            </MudCardContent>
+            <MudCardActions style="display: flex; justify-content:center">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" >@exch.Title</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+</div>
+
+
 
 @code {
+    List<ExchangeOrder> allExchangeOrders = new List<ExchangeOrder>();
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        allExchangeOrders = ExchangeOrderService.GetAllExchangeOrders();
+
+        foreach(var e in allExchangeOrders)
+        {
+            FileSystemService.DownloadImage(e.PhotoName);
+        }
+    }
 }

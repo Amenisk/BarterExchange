@@ -14,19 +14,19 @@
         </div>
         <div class="card-body">
             <div class="form-group">
-                <MudTextField @bind-Value="reg_name" Label="Имя" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+                <MudTextField @bind-Value="regName" Label="Имя" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <MudTextField @bind-Value="reg_surname" Label="Фамилия" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+                <MudTextField @bind-Value="regSurname" Label="Фамилия" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <MudTextField @bind-Value="reg_email" Label="Электронная почта" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+                <MudTextField @bind-Value="regEmail" Label="Электронная почта" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <MudTextField @bind-Value="reg_phoneNumber" Label="Номер телефона" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+                <MudTextField @bind-Value="regPhoneNumber" Label="Номер телефона" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
             </div>
             <div class="form-group">
-                <MudTextField @bind-Value="reg_pass" InputType="@PasswordInput" Clearable="true" Immediate="true" Label="Пароль" Variant="Variant.Filled" Adornment="Adornment.End"
+                <MudTextField @bind-Value="regPass" InputType="@PasswordInput" Clearable="true" Immediate="true" Label="Пароль" Variant="Variant.Filled" Adornment="Adornment.End"
                           AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestClick" AdornmentAriaLabel="Показать пароль"></MudTextField>
             </div>
             <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
@@ -52,11 +52,11 @@ else
 }
 
 @code {
-    string reg_name = "";
-    string reg_surname = "";
-    string reg_email = "";
-    string reg_phoneNumber = "";
-    string reg_pass = "";
+    string regName = "";
+    string regSurname = "";
+    string regEmail = "";
+    string regPhoneNumber = "";
+    string regPass = "";
     bool isError = false;
     string errorMessage = "";
     bool isShow;
@@ -66,37 +66,37 @@ else
 
     private void Register()
     {
-        if (reg_name != "" && reg_surname != "" && reg_email != "" && reg_phoneNumber != "" && reg_pass != "")
+        if (regName != "" && regSurname != "" && regEmail != "" && regPhoneNumber != "" && regPass != "")
         {
-            if (UserService.CheckEmail(reg_email))
+            if (UserService.CheckEmail(regEmail))
             {
                 isError = true;
                 errorMessage = "Пользователь с такой почтой уже существует";
                 return;
             }
 
-            if (UserService.CheckPhoneNumber(reg_phoneNumber))
+            if (UserService.CheckPhoneNumber(regPhoneNumber))
             {
                 isError = true;
                 errorMessage = "Пользователь с таким телефонным номером уже существует";
                 return;
             }
 
-            if (UserService.CheckCorrectEmail(reg_email))
+            if (UserService.CheckCorrectEmail(regEmail))
             {
                 isError = true;
                 errorMessage = "Некорректный Email";
                 return;
             }
 
-            if(UserService.CheckCorrectPhoneNumber(reg_phoneNumber))
+            if (UserService.CheckCorrectPhoneNumber(regPhoneNumber))
             {
                 isError = true;
                 errorMessage = "Некорректный номер телефона";
                 return;
             }
 
-            User user = new User(reg_name, reg_surname, reg_email, reg_phoneNumber, reg_pass);
+            User user = new User(regName, regSurname, regEmail, regPhoneNumber, regPass);
             UserService.RegisterUser(user);
             UserService.AuthorizeUser(user.Email, user.Password);
             isError = false;
@@ -128,10 +128,10 @@ else
 
     private void ClearPage()
     {
-        reg_name = "";
-        reg_surname = "";
-        reg_email = "";
-        reg_phoneNumber = "";
-        reg_pass = "";
+        regName = "";
+        regSurname = "";
+        regEmail = "";
+        regPhoneNumber = "";
+        regPass = "";
     }
 }
