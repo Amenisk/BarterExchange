@@ -5,12 +5,12 @@
 <MudText Style="font-size: 64px">@order.Title</MudText>
 <MudImage Src=@("Images/" + order.PhotoName) Elevation="25" Class="rounded-lg" Width="800" />
 <MudText Style="font-size: 28px; margin: 0 5% 0 0" >Категория предмета: @ItemService.GetItemCategoryByItemTypeId(order.ItemTypeId).Title</MudText>
-<MudText Style="font-size: 28px; margin: 0 5% 0 0">Тип предмета: @ItemService.GetItemTypeById(order.ItemTypeId).Title</MudText>
-<MudText Style="font-size: 36px; margin: 0 20% 0 0">Описание предмета</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.Description" Lines="5" Style="width:70%"/>
-<MudText Style="font-size: 36px; margin: 0 20% 0 0">Цель обмена</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.ExchangeDescription" Lines="5" Style="width:70%" />
-<MudText Style="font-size: 36px; margin: 0 20% 0 0">Контактная информация</MudText>
+<MudText Style="font-size: 28px; margin: 0 5% 3% 0">Тип предмета: @ItemService.GetItemTypeById(order.ItemTypeId).Title</MudText>
+<MudText Style="font-size: 36px">Описание предмета</MudText>
+<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.Description" Lines="5" Style="width:70%; margin: 0 0 3% 0"/>
+<MudText Style="font-size: 36px">Цель обмена</MudText>
+<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.ExchangeDescription" Lines="5" Style="width:70%; margin: 0 0 3% 0" />
+<MudText Style="font-size: 36px">Контактная информация</MudText>
 <MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.ContactInformation" Lines="5" Style="width:70%; margin: 0 0 10% 0" />
 
 
