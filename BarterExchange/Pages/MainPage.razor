@@ -1,6 +1,7 @@
 ﻿@page "/main-page"
 @inject ExchangeOrderService ExchangeOrderService
 @inject FileSystemService FileSystemService
+@inject NavigationManager Navigation
 
 <div class="card-header">
     <h3 style="display: flex; justify-content:center">Главная страница</h3>
@@ -13,7 +14,7 @@
                 <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
             </MudCardContent>
             <MudCardActions style="display: flex; justify-content:center">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" >@exch.Title</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@exch.Title</MudButton>
             </MudCardActions>
         </MudCard>
     }
@@ -33,5 +34,11 @@
         {
             FileSystemService.DownloadImage(e.PhotoName);
         }
+    }
+
+    private void OpenOrderPage(int id)
+    {
+        ExchangeOrderService.ChangeCurrentExchangeOrder(id);
+        Navigation.NavigateTo("/order-page");
     }
 }

@@ -111,5 +111,22 @@ namespace BarterExchange.Data.Services
         {
             Database.DeleteItemTypeByTitle(title);
         }
+
+        public ItemType GetItemTypeById(int id)
+        {
+            return Database.GetItemTypeById(id);
+        }
+
+        public ItemCategory GetItemCategoryById(int id)
+        {
+            return Database.GetItemCategoryById(id);
+        }
+
+        public ItemCategory GetItemCategoryByItemTypeId(int itemTypeId)
+        {
+            var itemType = Database.GetItemTypeById(itemTypeId);
+
+            return GetItemCategoryById(itemType.ItemCategoryId);
+        }
     }
 }

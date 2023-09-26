@@ -4,6 +4,8 @@ namespace BarterExchange.Data.Services
 {
     public class ExchangeOrderService
     {
+        public ExchangeOrder CurrentExchangeOrder { get; private set; }
+
         public int GetLastId()
         {
             var exchangeOrder = Database.GetLastExchangeOrder();
@@ -34,6 +36,16 @@ namespace BarterExchange.Data.Services
         public List<ExchangeOrder> GetAllExchangeOrders() 
         {
             return Database.GetAllExchangeOrders(); 
+        }
+
+        public ExchangeOrder GetExchangeOrder(int id)
+        {
+            return Database.GetExchangeOrderById(id);
+        }
+
+        public void ChangeCurrentExchangeOrder(int id)
+        {
+            CurrentExchangeOrder = GetExchangeOrder(id);
         }
     }
 }

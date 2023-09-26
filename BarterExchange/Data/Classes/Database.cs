@@ -174,5 +174,26 @@ namespace BarterExchange.Data.Classes
 
             return collection.Find(x => x.Title != null).ToList();
         }
+
+        public static ExchangeOrder GetExchangeOrderById(int id)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+
+            return collection.Find(x => x.ExchangeOrderId == id).FirstOrDefault();
+        }
+
+        public static ItemType GetItemTypeById(int id) 
+        {
+            var collection = database.GetCollection<ItemType>("ItemTypes");
+
+            return collection.Find(x => x.ItemTypeId == id).FirstOrDefault();
+        }
+
+        public static ItemCategory GetItemCategoryById(int id)
+        {
+            var collection = database.GetCollection<ItemCategory>("ItemCategories");
+
+            return collection.Find(x => x.ItemCategoryId == id).FirstOrDefault();
+        }
     }
 }

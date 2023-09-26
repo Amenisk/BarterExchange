@@ -13,7 +13,7 @@
         </div>
         <div class="card-body">
             <div class="form-group">
-                <MudTextField @bind-Value="title" Label="Название" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+                <MudTextField @bind-Value="title" Label="Название" Clearable="true" Immediate="true" Variant="Variant.Filled" MaxLength="50"></MudTextField>
             </div>
             <div class="card-body">
                 <MudSelect @bind-Value="titleItemCategory" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
@@ -141,6 +141,5 @@ else
         errorMessage = "Заполните все поля!";
     }
 }
-
 }
 
