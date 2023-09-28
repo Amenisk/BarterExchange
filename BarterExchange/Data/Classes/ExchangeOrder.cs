@@ -14,9 +14,12 @@ namespace BarterExchange.Data.Classes
         public string ContactInformation { get; set; }
         public int ItemTypeId { get; set; }
         public string PhotoName { get; set; }
+        public string CreatorEmail { get; set; }
+        public bool IsСonducted { get; set; }
+        public int ConductedExchangeOrderId { get; set; }
 
         public ExchangeOrder(string title, string description, string exchangeDescription, string contactInformation,
-        int itemTypeId, string photoName) 
+        int itemTypeId, string photoName, string creatorEmail) 
         {
             Title = title;
             Description = description;
@@ -24,6 +27,7 @@ namespace BarterExchange.Data.Classes
             ContactInformation = contactInformation;
             ItemTypeId = itemTypeId;
             PhotoName = photoName;
+            CreatorEmail = creatorEmail;
         }
     }
 }

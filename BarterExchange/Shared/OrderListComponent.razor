@@ -1,0 +1,50 @@
+﻿@inject ExchangeOrderService ExchangeOrderService
+@inject FileSystemService FileSystemService
+@inject NavigationManager Navigation
+
+<div class="card-group" style="width: 100%; margin: 10px 0 0 0">
+    @foreach (var exch in AllExchangeOrders)
+    {
+        <MudCard Outlined="true" style="width: 280; margin: 2%">
+            <MudCardContent>
+                <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+            </MudCardContent>
+            <MudCardActions style="display: flex; justify-content:center">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@exch.Title</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+</div>
+
+
+
+@code {
+    [Parameter]
+    public List<ExchangeOrder> AllExchangeOrders { get; set; }
+    [Parameter]
+    public bool IsCreatedOrders { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        foreach (var e in AllExchangeOrders)
+        {
+            FileSystemService.DownloadImage(e.PhotoName);
+        }
+    }
+
+    private void OpenOrderPage(int id)
+    {
+        ExchangeOrderService.ChangeCurrentExchangeOrder(id);
+        if(IsCreatedOrders == false)
+        {
+            Navigation.NavigateTo("/order");
+        }
+        else
+        {
+            Navigation.NavigateTo("/created-order");
+        }
+
+    }
+}

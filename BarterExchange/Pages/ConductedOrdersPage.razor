@@ -1,0 +1,9 @@
+﻿@page "/conducted-orders"
+@inject ExchangeOrderService ExchangeOrderService
+@inject UserService UserService
+
+<OrderListComponent AllExchangeOrders="@ExchangeOrderService.GetConductedExchangeOrders(UserService.CurrentUser.Email)" IsCreatedOrders="false"></OrderListComponent>
+
+@code {
+
+}

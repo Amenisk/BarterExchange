@@ -38,6 +38,16 @@ namespace BarterExchange.Data.Services
             return Database.GetAllExchangeOrders(); 
         }
 
+        public List<ExchangeOrder> GetCreatedExchangeOrders(string email)
+        {
+            return Database.GetExchangeOrdersByCreatorEmailAndConduct(email, false);
+        }
+
+        public List<ExchangeOrder> GetConductedExchangeOrders(string email)
+        {
+            return Database.GetExchangeOrdersByCreatorEmailAndConduct(email, true);
+        }
+
         public ExchangeOrder GetExchangeOrder(int id)
         {
             return Database.GetExchangeOrderById(id);
@@ -46,6 +56,17 @@ namespace BarterExchange.Data.Services
         public void ChangeCurrentExchangeOrder(int id)
         {
             CurrentExchangeOrder = GetExchangeOrder(id);
+        }
+
+        public void ConductExchangeOrder(int id)
+        {
+            Database.ConductExchangeOrder(id);
+        }
+
+        public void DeleteExchangeOrder(int id)
+        {
+            CurrentExchangeOrder = null;
+            Database.DeleteExchangeOrder(id);
         }
     }
 }

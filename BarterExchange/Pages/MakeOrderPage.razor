@@ -129,17 +129,22 @@ else
             var newExchangeOrderId = ExchangeOrderService.GetLastId() + 1;
 
             Stream stream = photo.OpenReadStream();
-            await FileSystemService.UploadImage(stream, photo.Name);
+            await FileSystemService.UploadImage(stream, newExchangeOrderId + GetPhotoExpansion(photo.Name));
             stream.Dispose();
 
             ExchangeOrderService.SaveExchangeOrder(new ExchangeOrder(title, description, exchangeDescription, contactInfromation,
-                ExchangeOrderService.GetItemTypeIdByTitle(titleItemType), photo.Name));
+                ExchangeOrderService.GetItemTypeIdByTitle(titleItemType), newExchangeOrderId + GetPhotoExpansion(photo.Name), UserService.CurrentUser.Email));
+        }
+        else
+        {
+            isError = true;
+            errorMessage = "Заполните все поля!";
+        } 
     }
-    else
+
+    private string GetPhotoExpansion(string photoName)
     {
-        isError = true;
-        errorMessage = "Заполните все поля!";
+        return photoName.Substring(photoName.LastIndexOf('.'));
     }
-}
 }
 

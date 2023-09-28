@@ -1,25 +1,19 @@
-﻿@page "/order-page"
+﻿@page "/order"
 @inject ExchangeOrderService ExchangeOrderService
 @inject ItemService ItemService
+@inject UserService UserService
 
-<MudText Style="font-size: 64px">@order.Title</MudText>
-<MudImage Src=@("Images/" + order.PhotoName) Elevation="25" Class="rounded-lg" Width="800" />
-<MudText Style="font-size: 28px; margin: 0 5% 0 0" >Категория предмета: @ItemService.GetItemCategoryByItemTypeId(order.ItemTypeId).Title</MudText>
-<MudText Style="font-size: 28px; margin: 0 5% 3% 0">Тип предмета: @ItemService.GetItemTypeById(order.ItemTypeId).Title</MudText>
-<MudText Style="font-size: 36px">Описание предмета</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.Description" Lines="5" Style="width:70%; margin: 0 0 3% 0"/>
-<MudText Style="font-size: 36px">Цель обмена</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.ExchangeDescription" Lines="5" Style="width:70%; margin: 0 0 3% 0" />
-<MudText Style="font-size: 36px">Контактная информация</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.ContactInformation" Lines="5" Style="width:70%; margin: 0 0 10% 0" />
-
+<OrderComponent></OrderComponent>
+@if(UserService.CurrentUser != null)
+{
+    <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+        <button name="regButton" class="btn btn-primary" @onclick=OfferExchange>Редактировать объявление</button>
+    </div>
+}
 
 @code {
-    ExchangeOrder order;
-
-    protected override void OnInitialized()
+    private void OfferExchange()
     {
-        base.OnInitialized();
-        order = ExchangeOrderService.CurrentExchangeOrder;
+        
     }
 }

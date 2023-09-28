@@ -1,0 +1,24 @@
+﻿@page "/created-order"
+@inject ExchangeOrderService ExchangeOrderService
+@inject ItemService ItemService
+@inject NavigationManager Navigation
+
+<OrderComponent></OrderComponent>
+
+<div class="form-group" style="display: flex; justify-content:center">
+    <button name="regButton" class="btn btn-primary" style="margin: 3%" @onclick=EditOrder>Редактировать объявление</button>
+    <button name="regButton" class="btn btn-primary" style="margin: 3%" @onclick=DeleteOrder>Удалить объявление</button>
+</div>
+
+@code {
+    public void EditOrder()
+    {
+        
+    }
+
+    public void DeleteOrder()
+    {
+        ExchangeOrderService.DeleteExchangeOrder(ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId);
+        Navigation.NavigateTo("/created-orders");
+    }
+}

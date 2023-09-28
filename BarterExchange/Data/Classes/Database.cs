@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using static MudBlazor.CategoryTypes;
 
@@ -172,7 +174,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
 
-            return collection.Find(x => x.Title != null).ToList();
+            return collection.Find(x => x.IsСonducted == false).ToList();
         }
 
         public static ExchangeOrder GetExchangeOrderById(int id)
@@ -194,6 +196,34 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<ItemCategory>("ItemCategories");
 
             return collection.Find(x => x.ItemCategoryId == id).FirstOrDefault();
+        }
+
+        public static List<ExchangeOrder> GetExchangeOrdersByCreatorEmailAndConduct(string creatorEmail, bool isConducted)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+
+            return collection.Find(x =>x.CreatorEmail == creatorEmail && x.IsСonducted == isConducted).ToList();
+        }
+
+        public static void ConductExchangeOrder(int id)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var filter = Builders<ExchangeOrder>.Filter.Eq("ExchangeOrderId", id);
+            var update = Builders<ExchangeOrder>.Update.Set("IsConducted", false);
+
+            collection.UpdateOne(filter, update);
+        }
+
+        public static void DeleteExchangeOrder(int id)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var gridFS = new GridFSBucket(database);
+            var order = collection.Find(x => x.ExchangeOrderId == id).FirstOrDefault();
+            var filter = Builders<GridFSFileInfo>.Filter.Eq(x => x.Filename, order.PhotoName);
+            var fileInfo = gridFS.Find(filter).FirstOrDefault();
+
+            collection.DeleteOne(x => x.ExchangeOrderId == id);
+            gridFS.Delete(fileInfo.Id);
         }
     }
 }
