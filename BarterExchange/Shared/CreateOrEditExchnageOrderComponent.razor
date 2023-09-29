@@ -1,0 +1,204 @@
+﻿@inject UserService UserService
+@inject NavigationManager Navigation
+@inject FileSystemService FileSystemService
+@inject ExchangeOrderService ExchangeOrderService
+@inject ItemService ItemService
+
+@if (UserService.IsAuthorized())
+{
+    <div class="card" style="width: 40%; margin: 100px 30% 0 30%">
+        <div class="card-header">
+            <h3 style="display: flex; justify-content:center">Создание объявление на обмен</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <MudTextField @bind-Value="title" Label="Название" Clearable="true" Immediate="true" Variant="Variant.Filled" MaxLength="50"></MudTextField>
+            </div>
+            <div class="card-body">
+                <MudSelect @bind-Value="titleItemCategory" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                       Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" SelectedValuesChanged="@ReloadItemTypesList">
+                    @foreach (var s in allItemCategoriesTitles)
+                    {
+                        <MudSelectItem Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="card-body">
+                <MudSelect @bind-Value="titleItemType" T="string" Label="Выберите тип предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                       Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                    @foreach (var s in itemTypesTitles)
+                    {
+                        <MudSelectItem Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="form-group">
+                <MudTextField @bind-Value="description" Label="Описание" Immediate="true" Variant="Variant.Filled" Lines="5"></MudTextField>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                    <ButtonTemplate>
+                        <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Image"
+                                   for="@context">
+                            Загрузить фото
+                        </MudButton>
+                    </ButtonTemplate>
+                </MudFileUpload>
+            </div>
+            <div class="form-group">
+                <MudTextField @bind-Value="exchangeDescription" Label="Цель обмена" Immediate="true" Variant="Variant.Filled" Lines="5"></MudTextField>
+            </div>
+            <div class="form-group">
+                <MudTextField @bind-Value="contactInformation" Label="Контактная информация" Immediate="true" Variant="Variant.Filled" Lines="3"></MudTextField>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <button name="regButton" class="btn btn-primary" @onclick=CreateOrEditOrder>@buttonWords</button>
+            </div>
+        </div>
+    </div>
+
+    @if (isError)
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+}
+else
+{
+    <div class="modal-body">
+        <h5>Авторизируйтесь</h5>
+        <p>Чтобы создать объявление для обмена, нужно сначала авторизироваться</p>
+        <p><button class="btn btn-secondary popover-test" @onclick=NavigateToAuthorization>Авторизоваться</button></p>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public ExchangeOrder Order { get; set; }
+    string buttonWords = "Создать объявление";
+    string title = "";
+    string description = "";
+    string exchangeDescription = "";
+    string titleItemCategory = "";
+    string titleItemType = "";
+    string contactInformation = "";
+    bool isError;
+    string errorMessage = "";
+    List<string> allItemCategoriesTitles = new List<string>();
+    List<string> itemTypesTitles = new List<string>();
+    IBrowserFile photo;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        allItemCategoriesTitles = ItemService.GetTitlesItemCategories();
+        if (Order != null)
+        {
+            buttonWords = "Отредактировать объявление";
+            title = Order.Title;
+            description = Order.Description;
+            exchangeDescription = Order.ExchangeDescription;
+            titleItemCategory = ItemService.GetItemCategoryById(ItemService.GetItemTypeById(Order.ItemTypeId).ItemCategoryId).Title;
+            titleItemType = ItemService.GetItemTypeById(Order.ItemTypeId).Title;
+            contactInformation = Order.ContactInformation;
+        }
+    }
+
+    private void ReloadItemTypesList()
+    {
+        titleItemType = "";
+        itemTypesTitles = ItemService.GetTitlesItemTypesByCategory
+            (ItemService.GetItemCategoryByTitle(titleItemCategory).ItemCategoryId);
+    }
+
+    private void UploadFiles(IBrowserFile file)
+    {
+        photo = file;
+    }
+
+    public void NavigateToAuthorization()
+    {
+        Navigation.NavigateTo("/authorization");
+    }
+
+    public async Task CreateOrEditOrder()
+    {
+        if (title != "" && description != "" && exchangeDescription != "" && titleItemCategory != "" && titleItemType != "" && contactInformation != "")
+        {
+            isError = false;
+
+
+
+            if (Order == null)
+            {
+                if (photo != null)
+                {
+                    CheckPhoto();
+                    var newExchangeOrderId = ExchangeOrderService.GetLastId() + 1;
+
+                    Stream stream = photo.OpenReadStream();
+                    await FileSystemService.UploadImage(stream, newExchangeOrderId + GetPhotoExpansion(photo.Name));
+                    stream.Dispose();
+
+                    ExchangeOrderService.SaveExchangeOrder(new ExchangeOrder(title, description, exchangeDescription, contactInformation,
+                        ExchangeOrderService.GetItemTypeIdByTitle(titleItemType), newExchangeOrderId + GetPhotoExpansion(photo.Name), UserService.CurrentUser.Email));
+                    Navigation.NavigateTo("main");
+                }
+                else
+                {
+                    isError = true;
+                    errorMessage = "Заполните все поля!";
+                }
+            }
+            else
+            {
+                Order.Title = title;
+                Order.Description = description;
+                Order.ExchangeDescription = exchangeDescription;
+                Order.ItemTypeId = ItemService.GetItemTypeByTitle(titleItemType).ItemTypeId;
+                Order.ContactInformation = contactInformation;
+
+                if (photo != null)
+                {
+                    CheckPhoto();
+                    FileSystemService.DeletePhoto(Order.PhotoName);
+                    Stream stream = photo.OpenReadStream();
+                    await FileSystemService.UploadImage(stream, Order.ExchangeOrderId + GetPhotoExpansion(photo.Name));
+                    stream.Dispose();
+
+                    Order.PhotoName = Order.ExchangeOrderId + GetPhotoExpansion(photo.Name);
+                }
+
+                ExchangeOrderService.EditOrder(Order);
+                Navigation.NavigateTo("order-menu");
+            }
+
+        }
+        else
+        {
+            isError = true;
+            errorMessage = "Заполните все поля!";
+        }
+    }
+
+    private string GetPhotoExpansion(string photoName)
+    {
+        return photoName.Substring(photoName.LastIndexOf('.'));
+    }
+
+    private void CheckPhoto()
+    {
+        if (photo.Size > 512000)
+        {
+            isError = true;
+            errorMessage = "Размер фото не может превышать 500 КБ!";
+        }
+    }
+}

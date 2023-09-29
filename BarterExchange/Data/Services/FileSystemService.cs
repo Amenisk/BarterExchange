@@ -14,5 +14,10 @@ namespace BarterExchange.Data.Services
         {
             Database.DownloadToLocal(name);
         }
+
+        public void DeletePhoto(string photoName) 
+        { 
+            Database.DeletePhoto(photoName);
+        }
     }
 }

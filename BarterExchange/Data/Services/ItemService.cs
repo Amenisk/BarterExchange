@@ -117,6 +117,11 @@ namespace BarterExchange.Data.Services
             return Database.GetItemTypeById(id);
         }
 
+        public ItemType GetItemTypeByTitle(string title)
+        {
+            return Database.GetItemTypeByTitle(title);
+        }
+
         public ItemCategory GetItemCategoryById(int id)
         {
             return Database.GetItemCategoryById(id);

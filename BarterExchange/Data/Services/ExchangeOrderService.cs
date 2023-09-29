@@ -68,5 +68,10 @@ namespace BarterExchange.Data.Services
             CurrentExchangeOrder = null;
             Database.DeleteExchangeOrder(id);
         }
+
+        public void EditOrder(ExchangeOrder order)
+        {
+            Database.ReplaceExchangeOrder(order);   
+        }
     }
 }

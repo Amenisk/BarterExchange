@@ -214,16 +214,29 @@ namespace BarterExchange.Data.Classes
             collection.UpdateOne(filter, update);
         }
 
+        public static void DeletePhoto(string photoName)
+        {
+            var gridFS = new GridFSBucket(database);
+            var filter = Builders<GridFSFileInfo>.Filter.Eq(x => x.Filename, photoName);
+            var fileInfo = gridFS.Find(filter).FirstOrDefault();
+
+            gridFS.Delete(fileInfo.Id);
+        }
+
         public static void DeleteExchangeOrder(int id)
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
-            var gridFS = new GridFSBucket(database);
             var order = collection.Find(x => x.ExchangeOrderId == id).FirstOrDefault();
-            var filter = Builders<GridFSFileInfo>.Filter.Eq(x => x.Filename, order.PhotoName);
-            var fileInfo = gridFS.Find(filter).FirstOrDefault();
+            DeletePhoto(order.PhotoName);
 
-            collection.DeleteOne(x => x.ExchangeOrderId == id);
-            gridFS.Delete(fileInfo.Id);
+            collection.DeleteOne(x => x.ExchangeOrderId == id);           
+        }
+
+        public static void ReplaceExchangeOrder(ExchangeOrder order)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+
+            collection.ReplaceOne(x => x.ExchangeOrderId == order.ExchangeOrderId, order);
         }
     }
 }
