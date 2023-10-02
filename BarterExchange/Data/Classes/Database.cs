@@ -209,7 +209,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
             var filter = Builders<ExchangeOrder>.Filter.Eq("ExchangeOrderId", id);
-            var update = Builders<ExchangeOrder>.Update.Set("IsConducted", false);
+            var update = Builders<ExchangeOrder>.Update.Set("IsConducted", true);
 
             collection.UpdateOne(filter, update);
         }
@@ -237,6 +237,50 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
 
             collection.ReplaceOne(x => x.ExchangeOrderId == order.ExchangeOrderId, order);
+        }
+
+        public static void SaveExchangeOrderOffer(ExchangeOrderOffer offer)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            collection.InsertOne(offer);
+        }
+
+        public static ExchangeOrderOffer GetExchangeOrderOfferByTwoId(int senderOrderId, int recipientOrderId)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            return collection.Find(x => x.SenderExchangeOrderId == senderOrderId 
+                && x.RecipientExchangeOrderId == recipientOrderId || x.RecipientExchangeOrderId == senderOrderId
+                && x.SenderExchangeOrderId == recipientOrderId).FirstOrDefault();
+        }
+
+        public static List<ExchangeOrderOffer> GetExchangeOffersBySenderEmail(string senderEmail)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            return collection.Find(x => x.SenderEmail == senderEmail && x.IsConducted == false).ToList();
+        }
+
+        public static List<ExchangeOrderOffer> GetExchangeOffersByRecipientEmail(string recipientEmail)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            return collection.Find(x => x.RecipientEmail == recipientEmail && x.IsConducted == false).ToList();
+        }
+
+        public static void AcceptExchangeOffer(int senderOrderId, int recipientOrderId)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+            var filter1 = Builders<ExchangeOrderOffer>.Filter.Eq("SenderExchangeOrderId", senderOrderId);
+            var filter2 = Builders<ExchangeOrderOffer>.Filter.Eq("RecepientExchangeOrderId", recipientOrderId);
+            var filter = Builders<ExchangeOrderOffer>.Filter.And(filter1, filter2);
+            var update = Builders<ExchangeOrderOffer>.Update.Set("IsConducted", true);
+
+            ConductExchangeOrder(senderOrderId);
+            ConductExchangeOrder(recipientOrderId);
+
+            collection.UpdateOne(filter, update);
         }
     }
 }

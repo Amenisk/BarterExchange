@@ -7,10 +7,16 @@
     <div class="card" style="width: 50%; margin: 100px 25% 0 25%">
         <div class="card-body">
             <div class="form-group" style="display: flex; justify-content:center">
-                <button name="regButton" class="btn btn-primary" style="margin: 5%; font-size: 36px" @onclick=GoToCreatedOrdersPage>Созданные обмены</button>
+                <button class="btn btn-primary" style="margin: 5%; font-size: 36px" @onclick=@(() => Navigate("/created-orders"))>Созданные обмены</button>
             </div>
             <div class="form-group" style="display: flex; justify-content:center">
-                <button name="regButton" class="btn btn-primary" style="margin: 5%; font-size: 36px" @onclick=GoToConductedOrdersPage>Проведённые обмены</button>
+                <button class="btn btn-primary" style="margin: 5%; font-size: 36px" @onclick=@(() => Navigate("/conducted-orders"))>Проведённые обмены</button>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center">
+                <button class="btn btn-primary" style="margin: 5%; font-size: 36px" @onclick=@(() => Navigate("/created-offers"))>Созданные предложения обмена</button>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center">
+                <button class="btn btn-primary" style="margin: 5%; font-size: 36px" @onclick=@(() => Navigate("/recieved-offers"))>Полученные предложения обмена</button>
             </div>
         </div>
     </div>
@@ -20,24 +26,14 @@ else
     <div class="modal-body">
         <h5>Авторизируйтесь</h5>
         <p>Чтобы просмотреть свои обмены, нужно сначала авторизироваться</p>
-        <p><button class="btn btn-secondary popover-test" @onclick=NavigateToAuthorization>Авторизоваться</button></p>
+        <p><button class="btn btn-secondary popover-test" @onclick=@(() => Navigate("/authorization"))>Авторизоваться</button></p>
     </div>
 }
 
 
 @code {
-    public void GoToCreatedOrdersPage()
+    public void Navigate(string path)
     {
-        Navigation.NavigateTo("/created-orders");
-    }
-
-    public void GoToConductedOrdersPage()
-    {
-        Navigation.NavigateTo("/conducted-orders");
-    }
-
-    public void NavigateToAuthorization()
-    {
-        Navigation.NavigateTo("/authorization");
+        Navigation.NavigateTo(path);
     }
 }

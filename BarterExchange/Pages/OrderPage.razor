@@ -2,18 +2,20 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject ItemService ItemService
 @inject UserService UserService
+@inject NavigationManager Navigation
 
 <OrderComponent></OrderComponent>
-@if(UserService.CurrentUser != null)
+@if(UserService.CurrentUser != null && 
+    ExchangeOrderService.CurrentExchangeOrder.CreatorEmail != UserService.CurrentUser.Email)
 {
-    <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
-        <button name="regButton" class="btn btn-primary" @onclick=OfferExchange>Редактировать объявление</button>
+    <div class="form-group" style="display: flex; justify-content:center; margin: 0 0 5% 0">
+        <button class="btn btn-primary" @onclick=OfferExchange>Предложить обмен</button>
     </div>
 }
 
 @code {
     private void OfferExchange()
     {
-        
+        Navigation.NavigateTo("/offer-exchange-orders");
     }
 }

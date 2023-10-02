@@ -16,6 +16,13 @@
     }
 </div>
 
+@if (isError)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
 
 
 @code {
@@ -23,6 +30,10 @@
     public List<ExchangeOrder> AllExchangeOrders { get; set; }
     [Parameter]
     public bool IsCreatedOrders { get; set; }
+    [Parameter]
+    public bool IsOfferOrders { get; set; }
+    bool isError;
+    string errorMessage = "";
 
     protected override void OnInitialized()
     {
@@ -36,7 +47,24 @@
 
     private void OpenOrderPage(int id)
     {
+        isError = false;
+
+        if(IsOfferOrders)
+        {
+            if (ExchangeOrderService.CheckExchangeOrderOffer(id, ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId))
+            {
+                isError = true;
+                errorMessage = "Такое предложение обмена уже существует!";
+                return;
+            }
+            ExchangeOrderService.SaveExchageOrderOffer(new ExchangeOrderOffer
+                (id, ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId));
+                Navigation.NavigateTo("/main");
+            return;
+        }
+
         ExchangeOrderService.ChangeCurrentExchangeOrder(id);
+
         if(IsCreatedOrders == false)
         {
             Navigation.NavigateTo("/order");

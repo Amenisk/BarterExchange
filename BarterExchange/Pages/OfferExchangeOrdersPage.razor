@@ -1,0 +1,9 @@
+﻿@page "/offer-exchange-orders"
+@inject ExchangeOrderService ExchangeOrderService
+@inject UserService UserService
+
+<OrderListComponent AllExchangeOrders="ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsOfferOrders="true"></OrderListComponent>
+
+@code {
+
+}

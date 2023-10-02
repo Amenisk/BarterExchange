@@ -1,0 +1,100 @@
+﻿@inject ExchangeOrderService ExchangeOrderService
+@inject NavigationManager Navigation
+@inject UserService UserService
+
+<MudTable Items="@Offers" Hover="true" LoadingProgressColor="Color.Info" Style="width: 50%; margin: 0 25% 0 25%">
+    <HeaderContent>
+        <MudTh>Отдаёте</MudTh>
+        <MudTh></MudTh>
+        <MudTh>Получаете</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd style="width: 280px; margin: 2%">
+            <MudCard Outlined="true">
+                @if(IsCreated)
+                {
+                    <MudCardContent>
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                    </MudCardContent>
+                    <MudCardActions style="display: flex; justify-content:center">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).Title</MudButton>
+                    </MudCardActions>
+                }
+                else
+                {
+                    <MudCardContent>
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                    </MudCardContent>
+                    <MudCardActions style="display: flex; justify-content:center">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).Title</MudButton>
+                    </MudCardActions>
+                }
+
+            </MudCard>
+        </MudTd>
+        <MudTd Style="display: flex; justify-content:center">
+            @if (IsCreated)
+            {
+                <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 90px 0 0 0" />
+            }
+            else
+            {
+                <div>
+                    <div style="display: flex; justify-content:center">
+                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 50px 0 0 0" />
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" @onclick=@(() => AcceptOffer(context)) style="margin: 50px 0 0 0">Принять обмен</button>
+                    </div>
+                </div>
+            }
+
+        </MudTd>
+        <MudTd style="width: 280px; margin: 2%">
+            <MudCard Outlined="true">
+                @if(IsCreated)
+                {
+                    <MudCardContent>
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                    </MudCardContent>
+                    <MudCardActions style="display: flex; justify-content:center">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).Title</MudButton>
+                    </MudCardActions>
+                }
+                else
+                {
+                    <MudCardContent>
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                    </MudCardContent>
+                    <MudCardActions style="display: flex; justify-content:center">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).Title</MudButton>
+                    </MudCardActions>
+                }
+
+            </MudCard>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+
+
+@code {
+    [Parameter]
+    public bool IsCreated { get; set; }
+    [Parameter]
+    public List<ExchangeOrderOffer> Offers { get; set; }
+
+
+    public void OpenOrderPage(int id)
+    {
+        ExchangeOrderService.ChangeCurrentExchangeOrder(id);
+        Navigation.NavigateTo("/order");
+    }
+
+    public void AcceptOffer(ExchangeOrderOffer offer)
+    {
+        ExchangeOrderService.AcceptExchangeOffer(offer.SenderExchangeOrderId, offer.RecipientExchangeOrderId);
+        Navigation.NavigateTo("/recieved-orders");
+    }
+}

@@ -73,5 +73,29 @@ namespace BarterExchange.Data.Services
         {
             Database.ReplaceExchangeOrder(order);   
         }
+
+        public void SaveExchageOrderOffer(ExchangeOrderOffer offer)
+        {
+            Database.SaveExchangeOrderOffer(offer);
+        }
+
+        public bool CheckExchangeOrderOffer(int senderOfferId, int recepientOrderId)
+        {
+            return Database.GetExchangeOrderOfferByTwoId(senderOfferId, recepientOrderId) != null;  
+        }
+
+        public List<ExchangeOrderOffer> GetCreatedExchangeOrderOffers(string senderEmail)
+        {
+            return Database.GetExchangeOffersBySenderEmail(senderEmail);
+        }
+        public List<ExchangeOrderOffer> GetRecievedExchangeOrderOffers(string recipientEmail)
+        {
+            return Database.GetExchangeOffersByRecipientEmail(recipientEmail);
+        }
+
+        public void AcceptExchangeOffer(int senderOrderId, int recepientOrderId)
+        {
+            Database.AcceptExchangeOffer(senderOrderId, recepientOrderId);
+        }
     }
 }

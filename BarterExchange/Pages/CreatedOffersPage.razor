@@ -1,0 +1,7 @@
+﻿@page "/created-offers"
+@inject ExchangeOrderService ExchangeOrderService
+@inject UserService UserService
+
+<OffersListComponent IsCreated="true" Offers="ExchangeOrderService.GetCreatedExchangeOrderOffers(UserService.CurrentUser.Email)"></OffersListComponent>
+
+
