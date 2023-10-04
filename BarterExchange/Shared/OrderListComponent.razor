@@ -1,6 +1,14 @@
 ﻿@inject ExchangeOrderService ExchangeOrderService
 @inject FileSystemService FileSystemService
 @inject NavigationManager Navigation
+@inject UserService UserService
+
+<div class="card">
+    <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
+        <MudTextField @bind-Value="@searchText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск" Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="Search" />
+        <MudCheckBox @bind-Checked="@isRecomendedOrders" Label="Рекомендуемые обмены" LabelPosition="LabelPosition.Start" Color="Color.Secondary" onchange="GetRecomendedOrders"></MudCheckBox>
+    </div>
+</div>
 
 <div class="card-group" style="width: 100%; margin: 10px 0 0 0">
     @foreach (var exch in AllExchangeOrders)
@@ -34,6 +42,8 @@
     public bool IsOfferOrders { get; set; }
     bool isError;
     string errorMessage = "";
+    string searchText = "";
+    bool isRecomendedOrders;
 
     protected override void OnInitialized()
     {
@@ -59,7 +69,7 @@
             }
             ExchangeOrderService.SaveExchageOrderOffer(new ExchangeOrderOffer
                 (id, ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId));
-                Navigation.NavigateTo("/main");
+            Navigation.NavigateTo("/main");
             return;
         }
 
@@ -73,6 +83,29 @@
         {
             Navigation.NavigateTo("/created-order");
         }
+    }
 
+    public void Search()
+    {
+        if(searchText != "")
+        {
+            AllExchangeOrders = ExchangeOrderService.GetListExchangeOrdersBySearch(searchText);
+        }
+        else
+        {
+            AllExchangeOrders = ExchangeOrderService.GetAllExchangeOrders();
+        }
+    }
+
+    public void GetRecomendedOrders()
+    {
+        if(isRecomendedOrders)
+        {
+            AllExchangeOrders = ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email);
+        }
+        else
+        {
+            AllExchangeOrders = ExchangeOrderService.GetAllExchangeOrders();
+        }
     }
 }

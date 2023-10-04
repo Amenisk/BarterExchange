@@ -97,5 +97,20 @@ namespace BarterExchange.Data.Services
         {
             Database.AcceptExchangeOffer(senderOrderId, recepientOrderId);
         }
+
+        public List<ExchangeOrderOffer> GetConductedExchangeOrderOffers(string email)
+        {
+            return Database.GetAllConductedOffersByUserEmail(email);
+        }
+
+        public List<ExchangeOrder> GetListExchangeOrdersBySearch(string searchText) 
+        {
+            return Database.SearchByTitleCategoryAndTypeItem(searchText);
+        }
+
+        public List<ExchangeOrder> GetRecomendedOrders(string email)
+        {
+            return Database.GetRecomendedOrdersByUserEmail(email);
+        }
     }
 }

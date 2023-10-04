@@ -174,7 +174,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
 
-            return collection.Find(x => x.IsСonducted == false).ToList();
+            return collection.Find(x => x.IsConducted == false).ToList();
         }
 
         public static ExchangeOrder GetExchangeOrderById(int id)
@@ -202,7 +202,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
 
-            return collection.Find(x =>x.CreatorEmail == creatorEmail && x.IsСonducted == isConducted).ToList();
+            return collection.Find(x =>x.CreatorEmail == creatorEmail && x.IsConducted == isConducted).ToList();
         }
 
         public static void ConductExchangeOrder(int id)
@@ -273,7 +273,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
             var filter1 = Builders<ExchangeOrderOffer>.Filter.Eq("SenderExchangeOrderId", senderOrderId);
-            var filter2 = Builders<ExchangeOrderOffer>.Filter.Eq("RecepientExchangeOrderId", recipientOrderId);
+            var filter2 = Builders<ExchangeOrderOffer>.Filter.Eq("RecipientExchangeOrderId", recipientOrderId);
             var filter = Builders<ExchangeOrderOffer>.Filter.And(filter1, filter2);
             var update = Builders<ExchangeOrderOffer>.Update.Set("IsConducted", true);
 
@@ -282,5 +282,90 @@ namespace BarterExchange.Data.Classes
 
             collection.UpdateOne(filter, update);
         }
-    }
+
+        public static List<ExchangeOrderOffer> GetAllConductedOffersByUserEmail(string email)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            return collection.Find(x => x.SenderEmail == email || x.RecipientEmail == email).ToList();
+        }
+
+        public static List<ExchangeOrder> SearchByTitleCategoryAndTypeItem(string searchText)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var listOrders = new List<ExchangeOrder>();
+            var itemTypesList = GetAllItemTypes();
+            var itemCategoriesList = GetAllItemCategories();
+            bool isContinue;
+
+
+            foreach (var item in collection.Find(x => !x.IsConducted).ToList())
+            {
+                isContinue = false;
+
+                if (item.Title.ToLower().Contains(searchText.ToLower()))
+                {
+                    listOrders.Add(item);
+                    continue;
+                }
+
+                foreach(var itemType in itemTypesList)
+                {
+                    if(itemType.Title.ToLower().Contains(searchText.ToLower()))
+                    {
+                        if(itemType.ItemTypeId == item.ItemTypeId)
+                        {
+                            listOrders.Add(item);
+                            isContinue = true;
+                        }
+                    }
+                }
+
+                if(isContinue)
+                {
+                    continue;
+                }
+
+                foreach (var itemCategory in itemCategoriesList)
+                {
+                    if(itemCategory.Title.ToLower().Contains(searchText.ToLower()))
+                    {
+                        var type = GetItemTypeById(item.ItemTypeId);
+                        if(type.ItemCategoryId == itemCategory.ItemCategoryId)
+                        {
+                            listOrders.Add(item);
+                        }
+                    }
+                }
+            }
+
+            return listOrders;
+        }
+
+        public static List<ExchangeOrder> GetRecomendedOrdersByUserEmail(string email)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var orders = collection.Find(x => x.IsConducted == false && x.CreatorEmail != email).ToList();
+            var userOrders = collection.Find(x => x.IsConducted == false && x.CreatorEmail == email).ToList();
+            var ordersList = new List<ExchangeOrder>(); 
+
+            foreach(var order in orders)
+            {
+                var type = GetItemTypeById(order.ItemTypeId);
+
+                foreach(var userOrder in userOrders)
+                {
+                    var userType = GetItemTypeById(userOrder.ItemTypeId);
+
+                    if (userType.Value >= type.Value * 0.9 && userType.Value <= type.Value * 1.1)
+                    {
+                        ordersList.Add(order);
+                        continue;
+                    }
+                }
+            }
+
+            return ordersList;
+        }
+    } 
 }
