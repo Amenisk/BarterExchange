@@ -5,6 +5,7 @@ namespace BarterExchange.Data.Services
     public class ExchangeOrderService
     {
         public ExchangeOrder CurrentExchangeOrder { get; private set; }
+        public int ValueItemType { get; set; }
 
         public int GetLastId()
         {
@@ -111,6 +112,16 @@ namespace BarterExchange.Data.Services
         public List<ExchangeOrder> GetRecomendedOrders(string email)
         {
             return Database.GetRecomendedOrdersByUserEmail(email);
+        }
+
+        public bool CheckAvailabilityExchangeOrders(string email)
+        {
+            return Database.CheckExchangeOrdersByUserEmail(email);
+        }
+
+        public List<ExchangeOrder> GetRelevantExchnageOrders(string email, int value)
+        {
+            return Database.GetRelevantExchangeOrdersByRecommendation(email, value);    
         }
     }
 }

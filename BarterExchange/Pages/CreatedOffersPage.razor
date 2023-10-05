@@ -2,6 +2,6 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject UserService UserService
 
-<OffersListComponent IsCreated="true" Offers="ExchangeOrderService.GetCreatedExchangeOrderOffers(UserService.CurrentUser.Email)"></OffersListComponent>
+<OffersListComponent IsRecieved="false" Offers="ExchangeOrderService.GetCreatedExchangeOrderOffers(UserService.CurrentUser.Email)"></OffersListComponent>
 
 

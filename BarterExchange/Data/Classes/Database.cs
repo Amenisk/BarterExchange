@@ -5,9 +5,10 @@ using MongoDB.Driver.GridFS;
 using static MudBlazor.CategoryTypes;
 
 namespace BarterExchange.Data.Classes
-{
+{  
     public static class Database
     {
+        private const double VALUE_PROCENT = 0.1;
         static MongoClient client = new MongoClient("mongodb://localhost");
         static IMongoDatabase database = client.GetDatabase("BarterExchangeService");
         public static void SaveUser(User user)
@@ -287,7 +288,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
 
-            return collection.Find(x => x.SenderEmail == email || x.RecipientEmail == email).ToList();
+            return collection.Find(x => x.SenderEmail == email || x.RecipientEmail == email && x.IsConducted == true).ToList();
         }
 
         public static List<ExchangeOrder> SearchByTitleCategoryAndTypeItem(string searchText)
@@ -357,7 +358,7 @@ namespace BarterExchange.Data.Classes
                 {
                     var userType = GetItemTypeById(userOrder.ItemTypeId);
 
-                    if (userType.Value >= type.Value * 0.9 && userType.Value <= type.Value * 1.1)
+                    if (userType.Value >= type.Value * (1 - VALUE_PROCENT) && userType.Value <= type.Value * (1 + VALUE_PROCENT))
                     {
                         ordersList.Add(order);
                         continue;
@@ -366,6 +367,33 @@ namespace BarterExchange.Data.Classes
             }
 
             return ordersList;
+        }
+
+        public static bool CheckExchangeOrdersByUserEmail(string email)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+
+            return collection.Find(x => x.CreatorEmail == email).FirstOrDefault() != null;
+        }
+
+        public static List<ExchangeOrder> GetRelevantExchangeOrdersByRecommendation(string email, int value)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var orderList = new List<ExchangeOrder>();
+            var orders = collection.Find(x => x.CreatorEmail == email && x.IsConducted == false).ToList();
+            
+            foreach( var order in orders)
+            {
+                var itemType = GetItemTypeById(order.ItemTypeId);
+
+                if (itemType.Value * (1 - VALUE_PROCENT) <= value && itemType.Value * (1 + VALUE_PROCENT) >= value)
+                {
+                    orderList.Add(order);
+                }
+                
+            }
+
+            return orderList;
         }
     } 
 }

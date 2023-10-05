@@ -2,13 +2,21 @@
 @inject FileSystemService FileSystemService
 @inject NavigationManager Navigation
 @inject UserService UserService
+@inject ItemService ItemService
 
-<div class="card">
-    <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
-        <MudTextField @bind-Value="@searchText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск" Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="Search" />
-        <MudCheckBox @bind-Checked="@isRecomendedOrders" Label="Рекомендуемые обмены" LabelPosition="LabelPosition.Start" Color="Color.Secondary" onchange="GetRecomendedOrders"></MudCheckBox>
+@if(!IsCreatedOrders && !IsOfferOrders)
+{
+    <div class="card">
+        <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
+            <MudTextField @bind-Value="@searchText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск"
+                      Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="Search" />
+            @if(UserService.CurrentUser != null && ExchangeOrderService.CheckAvailabilityExchangeOrders(UserService.CurrentUser.Email))
+            {
+                <MudCheckBox T="bool" Label="Рекомендуемые обмены" LabelPosition="LabelPosition.Start" Color="Color.Secondary" CheckedChanged="@(e => GetRecomendedOrders((bool)e))"></MudCheckBox>
+            }         
+        </div>
     </div>
-</div>
+}
 
 <div class="card-group" style="width: 100%; margin: 10px 0 0 0">
     @foreach (var exch in AllExchangeOrders)
@@ -67,9 +75,14 @@
                 errorMessage = "Такое предложение обмена уже существует!";
                 return;
             }
+
             ExchangeOrderService.SaveExchageOrderOffer(new ExchangeOrderOffer
                 (id, ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId));
             Navigation.NavigateTo("/main");
+            if(ExchangeOrderService.ValueItemType != 0)
+            {
+                ExchangeOrderService.ValueItemType == 0;
+            }
             return;
         }
 
@@ -78,6 +91,7 @@
         if(IsCreatedOrders == false)
         {
             Navigation.NavigateTo("/order");
+            ExchangeOrderService.ValueItemType = ItemService.GetItemTypeById(ExchangeOrderService.GetExchangeOrder(id).ItemTypeId).Value;
         }
         else
         {
@@ -85,7 +99,7 @@
         }
     }
 
-    public void Search()
+    private void Search()
     {
         if(searchText != "")
         {
@@ -97,9 +111,9 @@
         }
     }
 
-    public void GetRecomendedOrders()
+    public void GetRecomendedOrders(bool check)
     {
-        if(isRecomendedOrders)
+        if (check)
         {
             AllExchangeOrders = ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email);
         }

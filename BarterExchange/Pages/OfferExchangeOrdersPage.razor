@@ -2,7 +2,15 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject UserService UserService
 
-<OrderListComponent AllExchangeOrders="ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsOfferOrders="true"></OrderListComponent>
+@if(ExchangeOrderService.ValueItemType == 0)
+{
+    <OrderListComponent AllExchangeOrders="ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsOfferOrders="true"></OrderListComponent>
+}
+else
+{
+    <OrderListComponent AllExchangeOrders="ExchangeOrderService.GetRelevantExchnageOrders(UserService.CurrentUser.Email, ExchangeOrderService.ValueItemType)" IsOfferOrders="true"></OrderListComponent>
+}
+
 
 @code {
 
