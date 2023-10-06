@@ -17,7 +17,7 @@
         <div class="top-row px-4">
             @if(UserService.IsAuthorized())
             {
-                <NavLink href="authorization">@UserService.CurrentUser.Email</NavLink>
+                <NavLink href="profile">@UserService.CurrentUser.Email</NavLink>
             }
             else
             {

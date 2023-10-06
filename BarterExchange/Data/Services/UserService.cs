@@ -71,6 +71,12 @@ namespace BarterExchange.Data.Services
             CurrentUser = null;
         }
 
+        public void EditUserProfile(User user)
+        {
+            Database.EditUser(user);
+            CurrentUser = user;
+        }
+
 
     }
 }

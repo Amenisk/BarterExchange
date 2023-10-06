@@ -134,13 +134,14 @@ else
         {
             isError = false;
 
-
-
             if (Order == null)
             {
                 if (photo != null)
                 {
-                    CheckPhoto();
+                    if(CheckPhoto())
+                    {
+                        return;
+                    }
                     var newExchangeOrderId = ExchangeOrderService.GetLastId() + 1;
 
                     Stream stream = photo.OpenReadStream();
@@ -193,12 +194,14 @@ else
         return photoName.Substring(photoName.LastIndexOf('.'));
     }
 
-    private void CheckPhoto()
+    private bool CheckPhoto()
     {
         if (photo.Size > 512000)
         {
             isError = true;
             errorMessage = "Размер фото не может превышать 500 КБ!";
         }
+
+        return photo.Size > 512000;
     }
 }

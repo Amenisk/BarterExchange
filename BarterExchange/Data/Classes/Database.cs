@@ -360,7 +360,10 @@ namespace BarterExchange.Data.Classes
 
                     if (userType.Value >= type.Value * (1 - VALUE_PROCENT) && userType.Value <= type.Value * (1 + VALUE_PROCENT))
                     {
-                        ordersList.Add(order);
+                        if(!ordersList.Contains(order))
+                        {
+                            ordersList.Add(order);
+                        }      
                         continue;
                     }
                 }
@@ -394,6 +397,13 @@ namespace BarterExchange.Data.Classes
             }
 
             return orderList;
+        }
+
+        public static void EditUser(User user)
+        {
+            var collection = database.GetCollection<User>("Users");
+
+            collection.ReplaceOne(x => x.Email == user.Email, user);
         }
     } 
 }

@@ -43,7 +43,7 @@
     <div class="card-body">
         <div class="form-group">
             <div class="card-body">
-                <MudSelect @bind-Value="selectedTitlIteCategory2" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                <MudSelect @bind-Value="selectedTitleItemCategory2" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
                            Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" SelectedValuesChanged="() => UpdateTypesList(1)">
                     @foreach (var s in allTitlesItemCategories)
                     {
@@ -121,7 +121,7 @@
 
 @code {
     string selectedTitleItemCategory1 = "";
-    string selectedTitlIteCategory2 = "";
+    string selectedTitleItemCategory2 = "";
     string selectedTitleItemCategory3 = "";
     string titleItemType = "";
     string selectedTitleItemType1 = "";
@@ -147,7 +147,7 @@
         {
             selectedTitleItemType1 = "";
             titlesItemTypes1 = ItemService.GetTitlesItemTypesByCategory
-                (ItemService.GetItemCategoryByTitle(selectedTitlIteCategory2).ItemCategoryId);
+                (ItemService.GetItemCategoryByTitle(selectedTitleItemCategory2).ItemCategoryId);
         }
         else
         {
@@ -186,7 +186,7 @@
             return;
         }
 
-        ItemService.CreateItemType(new ItemType(ItemService.GetItemCategoryByTitle(selectedTitlIteCategory2).ItemCategoryId,
+        ItemService.CreateItemType(new ItemType(ItemService.GetItemCategoryByTitle(selectedTitleItemCategory1).ItemCategoryId,
             titleItemType, value));
         selectedTitleItemCategory1 = "";
         titleItemType = "";
@@ -198,7 +198,7 @@
         int value;
         ResetAlert();
 
-        if (selectedTitlIteCategory2 == "" || selectedTitleItemType1 == "")
+        if (selectedTitleItemCategory2 == "" || selectedTitleItemType1 == "")
         {
             CreateAlert(2, "Выберите категорию и тип предмета!");
             return;
@@ -217,7 +217,7 @@
         }
 
         ItemService.EditItemType(selectedTitleItemType1, value);
-        selectedTitlIteCategory2 = "";
+        selectedTitleItemCategory2 = "";
         selectedTitleItemType1 = "";
         valueType2 = "";
     }

@@ -1,0 +1,103 @@
+﻿@page "/profile"
+@inject UserService UserService
+
+<div class="card" style="width: 50%; margin: 100px 25% 0 25%">
+    <div class="card-header">
+        <h3 style="display: flex; justify-content:center">Профиль</h3>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <MudText Style="font-size: 24px">Имя: </MudText>
+            <MudTextField @bind-Value="name" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+        </div>
+        <div class="form-group" >
+            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Фамилия: </MudText>
+            <MudTextField @bind-Value="surname" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+        </div>
+        <div class="form-group" >
+            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Email: </MudText>
+            <MudTextField @bind-Value="email" ReadOnly="true" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+        </div>
+        <div class="form-group">
+            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Телефон: </MudText>
+            <MudTextField @bind-Value="phoneNumber" ReadOnly="true" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+        </div>
+        <div class="form-group">
+            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Пароль: </MudText>
+            <MudTextField @bind-Value="password" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text" InputType="@PasswordInput" Adornment="Adornment.End"
+                          AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestClick" AdornmentAriaLabel="Показать пароль"></MudTextField>
+        </div>
+        <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+            <button class="btn btn-primary" @onclick=EditProfile>@editProfileText</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    string name = "";
+    string surname = "";
+    string email = "";
+    string phoneNumber = "";
+    string password = "";
+    string helperText = "";
+    bool readOnly = true;
+    string editProfileText = "Редактировать профиль";
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+   
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        name = UserService.CurrentUser.Name;
+        surname = UserService.CurrentUser.Surname;
+        email = UserService.CurrentUser.Email;
+        phoneNumber = UserService.CurrentUser.PhoneNumber;
+        password = UserService.CurrentUser.Password;
+
+    }
+
+
+    private void ButtonTestClick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+    private void EditProfile()
+    {
+        if(readOnly)
+        {
+            readOnly = false;
+            editProfileText = "Сохранить";
+            helperText = "Это поле можно отредактировать";
+
+        }
+        else
+        {
+            if (UserService.CurrentUser.Name != name || UserService.CurrentUser.Surname != surname 
+                || UserService.CurrentUser.Password != password)
+            {
+                var user = new User(name, surname, email, phoneNumber, password);
+                UserService.EditUserProfile(user);
+            }
+
+
+            readOnly = true;
+            editProfileText = "Редактировать профиль";
+            helperText = "";
+        }
+    }
+
+    
+}
