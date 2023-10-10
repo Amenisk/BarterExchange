@@ -1,9 +1,4 @@
 ﻿@page "/"
+@inject ExchangeOrderService ExchangeOrderService
 
-<PageTitle>Index</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+<OrderListComponent AllExchangeOrders="@ExchangeOrderService.GetAllExchangeOrders()" IsCreatedOrders="false"></OrderListComponent>
