@@ -91,7 +91,14 @@
         if(IsCreatedOrders == false)
         {
             Navigation.NavigateTo("/order");
-            ExchangeOrderService.ValueItemType = ItemService.GetItemTypeById(ExchangeOrderService.GetExchangeOrder(id).ItemTypeId).Value;
+            if(isRecomendedOrders)
+            {
+                ExchangeOrderService.ValueItemType = ItemService.GetItemTypeById(ExchangeOrderService.GetExchangeOrder(id).ItemTypeId).Value;
+            }
+            else
+            {
+                ExchangeOrderService.ValueItemType = 0;
+            }
         }
         else
         {
@@ -115,10 +122,12 @@
     {
         if (check)
         {
+            isRecomendedOrders = true;
             AllExchangeOrders = ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email);
         }
         else
         {
+            isRecomendedOrders = false;
             AllExchangeOrders = ExchangeOrderService.GetAllExchangeOrders();
         }
     }
