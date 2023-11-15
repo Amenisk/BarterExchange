@@ -16,7 +16,7 @@
                 @if (context.SenderEmail == UserService.CurrentUser.Email)
                 {
                     <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                     </MudCardContent>
                     <MudCardActions style="display: flex; justify-content:center">
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).Title</MudButton>
@@ -25,7 +25,7 @@
                 else
                 {
                     <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                     </MudCardContent>
                     <MudCardActions style="display: flex; justify-content:center">
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).Title</MudButton>
@@ -42,7 +42,7 @@
                 @if (context.SenderEmail == UserService.CurrentUser.Email)
                 {
                     <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                     </MudCardContent>
                     <MudCardActions style="display: flex; justify-content:center">
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).Title</MudButton>

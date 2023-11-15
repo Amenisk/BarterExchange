@@ -35,7 +35,17 @@
         <MudTd Style="display: flex; justify-content:center">
             @if (!IsRecieved)
             {
-                <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 90px 0 0 0" />
+                <div>
+                    <div style="display: flex; justify-content:center">
+                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 90px 0 0 0" />
+                    </div>
+                    @if(!context.IsConducted)
+                    {
+                    <div>
+                        <button class="btn btn-primary" @onclick=@(() => RejectOffer(context)) style="margin: 50px 0 0 0">Отменить обмен</button>
+                    </div>
+                    }
+                </div>             
             }
             else
             {
@@ -45,6 +55,7 @@
                     </div>
                     <div>
                         <button class="btn btn-primary" @onclick=@(() => AcceptOffer(context)) style="margin: 50px 0 0 0">Принять обмен</button>
+                        <button class="btn btn-primary" @onclick=@(() => RejectOffer(context)) style="margin: 50px 0 0 0">Отклонить обмен</button>
                     </div>
                 </div>
             }
@@ -55,7 +66,7 @@
                 @if (!IsRecieved)
                 {
                     <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                     </MudCardContent>
                     <MudCardActions style="display: flex; justify-content:center">
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).Title</MudButton>
@@ -64,7 +75,7 @@
                 else
                 {
                     <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="150" />
+                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                     </MudCardContent>
                     <MudCardActions style="display: flex; justify-content:center">
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).Title</MudButton>
@@ -89,12 +100,18 @@
     public void OpenOrderPage(int id)
     {
         ExchangeOrderService.ChangeCurrentExchangeOrder(id);
-        Navigation.NavigateTo("/order");
+        Navigation.NavigateTo("/order-information");
     }
 
     public void AcceptOffer(ExchangeOrderOffer offer)
     {
         ExchangeOrderService.AcceptExchangeOffer(offer.SenderExchangeOrderId, offer.RecipientExchangeOrderId);
-        Navigation.NavigateTo("/recieved-offers");
+        Navigation.NavigateTo("/main");
+    }
+
+    public void RejectOffer(ExchangeOrderOffer offer)
+    {
+        ExchangeOrderService.RejectExchangeOffer(offer.SenderExchangeOrderId, offer.RecipientExchangeOrderId);
+        Navigation.NavigateTo("/main");
     }
 }

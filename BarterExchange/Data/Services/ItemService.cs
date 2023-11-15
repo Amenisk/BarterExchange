@@ -133,5 +133,10 @@ namespace BarterExchange.Data.Services
 
             return GetItemCategoryById(itemType.ItemCategoryId);
         }
+
+        public bool CheckItemTypeAvailabilityOfOrder(int itemTypeId)
+        {
+            return Database.CheckItemTypeAvailabilityOfOrder(itemTypeId);
+        }
     }
 }

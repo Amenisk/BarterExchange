@@ -123,5 +123,10 @@ namespace BarterExchange.Data.Services
         {
             return Database.GetRelevantExchangeOrdersByRecommendation(email, value);    
         }
+
+        public void RejectExchangeOffer(int senderOrderId, int recepientOrderId)
+        {
+            Database.RejectExchangeOffer(senderOrderId, recepientOrderId);
+        }
     }
 }

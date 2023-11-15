@@ -232,7 +232,13 @@
             return;
         }
 
-        ItemService.DeleteItemType(selectedTitleItemType2);
+
+        if(ItemService.CheckItemTypeAvailabilityOfOrder
+            (ItemService.GetItemTypeByTitle(selectedTitleItemType2).ItemTypeId))
+        {
+            ItemService.DeleteItemType(selectedTitleItemType2);
+            CreateAlert(3, "Нельзя удалить тип предмета, так как с этим типом уже созданы объявления обмена!");
+        }
         selectedTitleItemCategory3 = "";
         selectedTitleItemType2 = "";
     }
@@ -249,4 +255,6 @@
         isError = false;
         numberAlert = 0;
     }
+
+
 }

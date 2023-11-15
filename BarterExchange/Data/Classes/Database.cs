@@ -288,7 +288,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
 
-            return collection.Find(x => x.SenderEmail == email || x.RecipientEmail == email && x.IsConducted == true).ToList();
+            return collection.Find(x => (x.SenderEmail == email || x.RecipientEmail == email) && x.IsConducted == true).ToList();
         }
 
         public static List<ExchangeOrder> SearchByTitleCategoryAndTypeItem(string searchText)
@@ -404,6 +404,23 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<User>("Users");
 
             collection.ReplaceOne(x => x.Email == user.Email, user);
+        }
+
+        public static void RejectExchangeOffer(int senderOrderId, int recipientOrderId)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            var offer = GetExchangeOrderOfferByTwoId(senderOrderId, recipientOrderId);
+
+            collection.DeleteOne(x => x.SenderExchangeOrderId == offer.SenderExchangeOrderId 
+                && x.RecipientExchangeOrderId == offer.RecipientExchangeOrderId);
+        }
+
+        public static bool CheckItemTypeAvailabilityOfOrder(int itemTypeId)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+
+            return collection.Find(x => x.ItemTypeId == itemTypeId).FirstOrDefault() != null;
         }
     } 
 }
