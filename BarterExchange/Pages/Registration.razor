@@ -96,6 +96,7 @@ else
                 return;
             }
 
+            EncryptData();
             User user = new User(regName, regSurname, regEmail, regPhoneNumber, regPass);
             UserService.RegisterUser(user);
             UserService.AuthorizeUser(user.Email, user.Password);
@@ -134,4 +135,12 @@ else
         regPhoneNumber = "";
         regPass = "";
     }
+
+    private void EncryptData()
+    {
+        regEmail = UserService.EncodeDecrypt(regEmail, Storage.Key);
+        regPhoneNumber = UserService.EncodeDecrypt(regPhoneNumber, Storage.Key);
+        regPass = UserService.EncodeDecrypt(regPass, Storage.Key);
+    }
+
 }

@@ -42,6 +42,9 @@ namespace BarterExchange.Data.Services
 
         public bool AuthorizeUser(string emailOrPhoneNumber, string password)
         {
+            emailOrPhoneNumber = UserService.EncodeDecrypt(emailOrPhoneNumber, Storage.Key);
+            password = UserService.EncodeDecrypt(password, Storage.Key);
+
             var user1 = Database.AuthorizeUserByEmail(emailOrPhoneNumber, password);
             var user2 = Database.AuthorizeUserByPhoneNumber(emailOrPhoneNumber, password);
 
@@ -75,6 +78,21 @@ namespace BarterExchange.Data.Services
         {
             Database.EditUser(user);
             CurrentUser = user;
+        }
+
+        public static string EncodeDecrypt(string str, ushort secretKey)
+        {
+            var ch = str.ToArray(); //преобразуем строку в символы
+            string newStr = "";      //переменная которая будет содержать зашифрованную строку
+            foreach (var c in ch)  //выбираем каждый элемент из массива символов нашей строки
+                newStr += TopSecret(c, secretKey);  //производим шифрование каждого отдельного элемента и сохраняем его в строку
+            return newStr;
+        }
+
+        private static char TopSecret(char character, ushort secretKey)
+        {
+            character = (char)(character ^ secretKey); //Производим XOR операцию
+            return character;
         }
 
 

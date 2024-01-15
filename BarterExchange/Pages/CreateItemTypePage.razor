@@ -237,9 +237,10 @@
         if(ItemService.CheckItemTypeAvailabilityOfOrder
             (ItemService.GetItemTypeByTitle(selectedTitleItemType2).ItemTypeId))
         {
-            ItemService.DeleteItemType(selectedTitleItemType2);
             CreateAlert(3, "Нельзя удалить тип предмета, так как с этим типом уже созданы объявления обмена!");
+            return;
         }
+        ItemService.DeleteItemType(selectedTitleItemType2);
         selectedTitleItemCategory3 = "";
         selectedTitleItemType2 = "";
         titlesItemTypes2.Clear();

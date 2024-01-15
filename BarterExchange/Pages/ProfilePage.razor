@@ -56,10 +56,9 @@
         base.OnInitialized();
         name = UserService.CurrentUser.Name;
         surname = UserService.CurrentUser.Surname;
-        email = UserService.CurrentUser.Email;
-        phoneNumber = UserService.CurrentUser.PhoneNumber;
-        password = UserService.CurrentUser.Password;
-
+        email = UserService.EncodeDecrypt(UserService.CurrentUser.Email, Storage.Key);
+        phoneNumber = UserService.EncodeDecrypt(UserService.CurrentUser.PhoneNumber, Storage.Key);
+        password = UserService.EncodeDecrypt(UserService.CurrentUser.Password, Storage.Key);
     }
 
 
@@ -92,6 +91,7 @@
             if (UserService.CurrentUser.Name != name || UserService.CurrentUser.Surname != surname 
                 || UserService.CurrentUser.Password != password)
             {
+                EncryptData();
                 var user = new User(name, surname, email, phoneNumber, password);
                 UserService.EditUserProfile(user);
             }
@@ -109,4 +109,11 @@
         Navigation.NavigateTo("/main");
         Storage.Nav.Reload();
     }  
+
+    private void EncryptData()
+    {
+        email = UserService.EncodeDecrypt(email, Storage.Key);
+        phoneNumber = UserService.EncodeDecrypt(phoneNumber, Storage.Key);
+        password = UserService.EncodeDecrypt(password, Storage.Key);
+    }
 }

@@ -17,7 +17,7 @@
         <div class="top-row px-4">
             @if(UserService.IsAuthorized())
             {
-                <NavLink href="profile">@UserService.CurrentUser.Email</NavLink>
+                <NavLink href="profile">@UserService.EncodeDecrypt(UserService.CurrentUser.Email, Storage.Key)</NavLink>
             }
             else
             {
