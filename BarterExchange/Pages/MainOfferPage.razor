@@ -17,7 +17,7 @@
                             <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                         </MudCardContent>
                         <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@exch.Title</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@ExchangeOrderService.CutName(exch.Title)</MudButton>
                         </MudCardActions>
                     </MudCard>
                 }
@@ -34,11 +34,11 @@
                 @foreach (var exch in ExchangeOrderService.RecepientOrders)
                 {
                     <MudCard Outlined="true" style="width: 280; margin: 2%">
-                        <MudCardContent>
+                        <MudCardContent >
                             <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                         </MudCardContent>
                         <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@exch.Title</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@ExchangeOrderService.CutName(exch.Title)</MudButton>
                         </MudCardActions>
                     </MudCard>
                 }

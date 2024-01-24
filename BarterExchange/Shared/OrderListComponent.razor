@@ -25,11 +25,11 @@
         @foreach (var exch in AllExchangeOrders)
         {
             <MudCard Outlined="true" style="width: 280; margin: 2%">
-                <MudCardContent>
-                    <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                <MudCardContent Class="d-flex justify-center align-center">
+                    <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Style="width: 250px; height: 250px" />
                 </MudCardContent>
                 <MudCardActions style="display: flex; justify-content:center">
-                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@exch.Title</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@ExchangeOrderService.CutName(exch.Title)</MudButton>
                 </MudCardActions>
             </MudCard>
         }
@@ -47,7 +47,7 @@ else
                         <MudImage Src=@("Images/" + @exch.First().PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                     </MudCardContent>
                     <MudCardActions style="display: flex; justify-content:center">
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.First().ExchangeOrderId)">@exch.First().Title</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.First().ExchangeOrderId)">@ExchangeOrderService.CutName(exch.First().Title)</MudButton>
                     </MudCardActions>
                 </MudCard>
             }
@@ -57,8 +57,8 @@ else
                         @foreach (var o in exch)
                         {
                             <MudCardActions style="display: flex; justify-content:center">
-                       
-                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch)">@o.Title</MudButton>
+
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch)">@ExchangeOrderService.CutName(o.Title)</MudButton>
                         
                             </MudCardActions>
                         }

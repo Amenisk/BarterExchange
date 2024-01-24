@@ -178,5 +178,17 @@ namespace BarterExchange.Data.Services
             SenderOrders.Clear();
             RecepientOrders.Clear();
         }
+
+        public string CutName(string name)
+        {
+            if(name.Length <= 25)
+            {
+                return name;
+            }
+            else
+            {
+                return name.Substring(0, 22) + "...";
+            }
+        }
     }
 }
