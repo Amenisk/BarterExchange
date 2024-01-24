@@ -7,18 +7,20 @@ namespace BarterExchange.Data.Classes
     {
         [BsonIgnoreIfDefault]
         public ObjectId _id;
-        public int SenderExchangeOrderId { get; set; }
-        public int RecipientExchangeOrderId { get; set; }
+        public int ExchangeOfferId { get; set; }
+        public List<int> SenderExchangeOrdersId { get; set; }
+        public List<int> RecipientExchangeOrdersId { get; set; }
         public string SenderEmail { get; set; }
         public string RecipientEmail { get; set; }
         public bool IsConducted { get; set; }
 
-        public ExchangeOrderOffer(int senderExchangeOrderId, int recipientExchangeOrderId) 
+        public ExchangeOrderOffer(List<int> senderExchangeOrdersId, List<int> recipientExchangeOrdersId) 
         { 
-            SenderExchangeOrderId = senderExchangeOrderId;
-            RecipientExchangeOrderId = recipientExchangeOrderId;
-            SenderEmail = Database.GetExchangeOrderById(senderExchangeOrderId).CreatorEmail;
-            RecipientEmail = Database.GetExchangeOrderById(recipientExchangeOrderId).CreatorEmail;
+            SenderExchangeOrdersId = senderExchangeOrdersId;
+            RecipientExchangeOrdersId = recipientExchangeOrdersId;
+            SenderEmail = Database.GetExchangeOrderById(senderExchangeOrdersId.First()).CreatorEmail;
+            RecipientEmail = Database.GetExchangeOrderById(recipientExchangeOrdersId.First()).CreatorEmail;
+            ExchangeOfferId = Database.GetLastExchangeOfferId() + 1;
         }
     }
 }

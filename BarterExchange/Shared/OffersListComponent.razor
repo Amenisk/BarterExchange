@@ -13,21 +13,47 @@
             <MudCard Outlined="true">
                 @if (!IsRecieved)
                 {
-                    <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                    </MudCardContent>
-                    <MudCardActions style="display: flex; justify-content:center">
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).Title</MudButton>
-                    </MudCardActions>
+                    @if (context.SenderExchangeOrdersId.Count() == 1)
+                    {
+                        <MudCardContent>
+                                <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />               
+                        </MudCardContent>
+                        <MudCardActions style="display: flex; justify-content:center">
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrdersId.First())">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).Title</MudButton>
+                        </MudCardActions>
+                    }
+                    else
+                    {
+                        @foreach(var s in context.SenderExchangeOrdersId)
+                        {
+                            <MudCardActions style="display: flex; justify-content:center">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.GetExchangeOrder(s).Title</MudButton>
+                            </MudCardActions>
+                        }
+                        
+                    }       
                 }
                 else
                 {
-                    <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                    </MudCardContent>
-                    <MudCardActions style="display: flex; justify-content:center">
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).Title</MudButton>
-                    </MudCardActions>
+                    @if (context.RecipientExchangeOrdersId.Count() == 1)
+                    {
+                        <MudCardContent>
+                            <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                        </MudCardContent>
+                        <MudCardActions style="display: flex; justify-content:center">
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrdersId.First())">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).Title</MudButton>
+                        </MudCardActions>
+                    }
+                    else
+                    {
+                        @foreach (var s in context.RecipientExchangeOrdersId)
+                        {
+                            <MudCardActions style="display: flex; justify-content:center">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.GetExchangeOrder(s).Title</MudButton>
+                            </MudCardActions>
+                        }
+
+                    }
                 }
 
             </MudCard>
@@ -65,23 +91,47 @@
             <MudCard Outlined="true">
                 @if (!IsRecieved)
                 {
-                    <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                    </MudCardContent>
-                    <MudCardActions style="display: flex; justify-content:center">
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrderId).Title</MudButton>
-                    </MudCardActions>
+                    @if (context.RecipientExchangeOrdersId.Count() == 1)
+                    {
+                        <MudCardContent>
+                            <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                        </MudCardContent>
+                        <MudCardActions style="display: flex; justify-content:center">
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrdersId.First())">@ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).Title</MudButton>
+                        </MudCardActions>
+                    }
+                    else
+                    {
+                        @foreach (var s in context.RecipientExchangeOrdersId)
+                        {
+                            <MudCardActions style="display: flex; justify-content:center">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.GetExchangeOrder(s).Title</MudButton>
+                            </MudCardActions>
+                        }
+                    }
                 }
                 else
                 {
-                    <MudCardContent>
-                        <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                    </MudCardContent>
-                    <MudCardActions style="display: flex; justify-content:center">
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrderId)">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrderId).Title</MudButton>
-                    </MudCardActions>
-                }
+                    @if (context.SenderExchangeOrdersId.Count() == 1)
+                    {
+                        <MudCardContent>
+                            <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                        </MudCardContent>
+                        <MudCardActions style="display: flex; justify-content:center">
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrdersId.First())">@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).Title</MudButton>
+                        </MudCardActions>
+                    }
+                    else
+                    {
+                        @foreach (var s in context.SenderExchangeOrdersId)
+                        {
+                            <MudCardActions style="display: flex; justify-content:center">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.GetExchangeOrder(s).Title</MudButton>
+                            </MudCardActions>
+                        }
 
+                    }
+                }
             </MudCard>
         </MudTd>
     </RowTemplate>
@@ -105,13 +155,13 @@
 
     public void AcceptOffer(ExchangeOrderOffer offer)
     {
-        ExchangeOrderService.AcceptExchangeOffer(offer.SenderExchangeOrderId, offer.RecipientExchangeOrderId);
+        ExchangeOrderService.AcceptExchangeOffer(offer);
         Navigation.NavigateTo("/main");
     }
 
     public void RejectOffer(ExchangeOrderOffer offer)
     {
-        ExchangeOrderService.RejectExchangeOffer(offer.SenderExchangeOrderId, offer.RecipientExchangeOrderId);
+        ExchangeOrderService.RejectExchangeOffer(offer.ExchangeOfferId);
         Navigation.NavigateTo("/main");
     }
 }

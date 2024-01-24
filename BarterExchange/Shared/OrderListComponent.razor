@@ -1,8 +1,10 @@
 ﻿@inject ExchangeOrderService ExchangeOrderService
-@inject FileSystemService FileSystemService
 @inject NavigationManager Navigation
+@inject FileSystemService FileSystemService
+
 @inject UserService UserService
 @inject ItemService ItemService
+@inject ExchangeOrderService ExchangeOrderService
 
 @if(!IsCreatedOrders && !IsOfferOrders)
 {
@@ -17,20 +19,56 @@
         </div>
     </div>
 }
+@if(RecomendedOrders == null)
+{
+    <div class="card-group" style="width: 100%; margin: 10px 0 0 0">
+        @foreach (var exch in AllExchangeOrders)
+        {
+            <MudCard Outlined="true" style="width: 280; margin: 2%">
+                <MudCardContent>
+                    <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                </MudCardContent>
+                <MudCardActions style="display: flex; justify-content:center">
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@exch.Title</MudButton>
+                </MudCardActions>
+            </MudCard>
+        }
+    </div>
+}
+else
+{
+    <div class="card-group" style="width: 100%; margin: 10px 0 0 0">
+        @foreach (var exch in RecomendedOrders)
+        {
+            if(exch.Count == 1)
+            {
+                <MudCard Outlined="true" style="width: 280; margin: 2%">
+                    <MudCardContent>
+                        <MudImage Src=@("Images/" + @exch.First().PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                    </MudCardContent>
+                    <MudCardActions style="display: flex; justify-content:center">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.First().ExchangeOrderId)">@exch.First().Title</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            }
+            else
+            {
+                    <MudCard Outlined="true" style="width: 280; margin: 2%">
+                        @foreach (var o in exch)
+                        {
+                            <MudCardActions style="display: flex; justify-content:center">
+                       
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch)">@o.Title</MudButton>
+                        
+                            </MudCardActions>
+                        }
+                    </MudCard>
+            }
 
-<div class="card-group" style="width: 100%; margin: 10px 0 0 0">
-    @foreach (var exch in AllExchangeOrders)
-    {
-        <MudCard Outlined="true" style="width: 280; margin: 2%">
-            <MudCardContent>
-                <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-            </MudCardContent>
-            <MudCardActions style="display: flex; justify-content:center">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@exch.Title</MudButton>
-            </MudCardActions>
-        </MudCard>
-    }
-</div>
+        }
+    </div>
+}
+
 
 @if (isError)
 {
@@ -45,6 +83,8 @@
     [Parameter]
     public List<ExchangeOrder> AllExchangeOrders { get; set; }
     [Parameter]
+    public List<List<ExchangeOrder>> RecomendedOrders { get; set; }
+    [Parameter]
     public bool IsCreatedOrders { get; set; }
     [Parameter]
     public bool IsOfferOrders { get; set; }
@@ -52,15 +92,47 @@
     string errorMessage = "";
     string searchText = "";
     bool isRecomendedOrders;
+    public List<ExchangeOrder> removedOrders = new List<ExchangeOrder>();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        bool isRemoved;
 
-        foreach (var e in AllExchangeOrders)
+
+        if(RecomendedOrders == null)
         {
-            FileSystemService.DownloadImage(e.PhotoName);
-        }
+            foreach (var e in AllExchangeOrders)
+            {
+                FileSystemService.DownloadImage(e.PhotoName);
+                isRemoved = false;
+
+                foreach (var s in ExchangeOrderService.SenderOrders)
+                {
+                    if (e.ExchangeOrderId == s.ExchangeOrderId)
+                    {
+                        removedOrders.Add(e);
+                        isRemoved = true;
+                    }
+                }
+
+                if (!isRemoved)
+                {
+                    foreach (var r in ExchangeOrderService.RecepientOrders)
+                    {
+                        if (e.ExchangeOrderId == r.ExchangeOrderId)
+                        {
+                            removedOrders.Add(e);
+                        }
+                    }
+                }
+            }
+
+            foreach (var r in removedOrders)
+            {
+                AllExchangeOrders.Remove(r);
+            }
+        }    
     }
 
     private void OpenOrderPage(int id)
@@ -69,16 +141,18 @@
 
         if(IsOfferOrders)
         {
-            if (ExchangeOrderService.CheckExchangeOrderOffer(id, ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId))
+
+            if(ExchangeOrderService.IsSenderOrders)
             {
-                isError = true;
-                errorMessage = "Такое предложение обмена уже существует!";
-                return;
+                ExchangeOrderService.SenderOrders.Add(ExchangeOrderService.GetExchangeOrder(id));
+            }
+            else
+            {
+                ExchangeOrderService.RecepientOrders.Add(ExchangeOrderService.GetExchangeOrder(id));
             }
 
-            ExchangeOrderService.SaveExchageOrderOffer(new ExchangeOrderOffer
-                (id, ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId));
-            Navigation.NavigateTo("/main");
+            Navigation.NavigateTo("/main-offer");
+
             if(ExchangeOrderService.ValueItemType != 0)
             {
                 ExchangeOrderService.ValueItemType = 0;
@@ -104,6 +178,23 @@
         {
             Navigation.NavigateTo("/created-order");
         }
+    }
+
+    private void OpenOrderPage(List<ExchangeOrder> orders)
+    {
+        foreach(var o in orders)
+        {
+            if (ExchangeOrderService.IsSenderOrders)
+            {
+                ExchangeOrderService.SenderOrders.Add(ExchangeOrderService.GetExchangeOrder(o.ExchangeOrderId));
+            }
+            else
+            {
+                ExchangeOrderService.RecepientOrders.Add(ExchangeOrderService.GetExchangeOrder(o.ExchangeOrderId));
+            }
+
+            Navigation.NavigateTo("/main-offer");
+        }    
     }
 
     private void Search()

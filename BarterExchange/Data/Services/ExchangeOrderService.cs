@@ -7,6 +7,12 @@ namespace BarterExchange.Data.Services
         public ExchangeOrder CurrentExchangeOrder { get; private set; }
         public int ValueItemType { get; set; }
 
+        public bool IsSenderOrders { get; set; }    
+
+        public List<ExchangeOrder> SenderOrders { get; set; } = new List<ExchangeOrder>();
+
+        public List<ExchangeOrder> RecepientOrders { get; set; } = new List<ExchangeOrder>();
+
         public int GetLastId()
         {
             var exchangeOrder = Database.GetLastExchangeOrder();
@@ -75,14 +81,14 @@ namespace BarterExchange.Data.Services
             Database.ReplaceExchangeOrder(order);   
         }
 
-        public void SaveExchageOrderOffer(ExchangeOrderOffer offer)
+        public void SaveExchageOrderOffer()
         {
-            Database.SaveExchangeOrderOffer(offer);
+            Database.SaveExchangeOrderOffer(new ExchangeOrderOffer(GetOrdersId(SenderOrders), GetOrdersId(RecepientOrders)));
         }
 
-        public bool CheckExchangeOrderOffer(int senderOfferId, int recepientOrderId)
+        public bool CheckExchangeOrderOffer()
         {
-            return Database.GetExchangeOrderOfferByTwoId(senderOfferId, recepientOrderId) != null;  
+            return Database.CheckExchangeOrderOffer(new ExchangeOrderOffer(GetOrdersId(SenderOrders), GetOrdersId(RecepientOrders)));
         }
 
         public List<ExchangeOrderOffer> GetCreatedExchangeOrderOffers(string senderEmail)
@@ -94,9 +100,9 @@ namespace BarterExchange.Data.Services
             return Database.GetExchangeOffersByRecipientEmail(recipientEmail);
         }
 
-        public void AcceptExchangeOffer(int senderOrderId, int recepientOrderId)
+        public void AcceptExchangeOffer(ExchangeOrderOffer offer)
         {
-            Database.AcceptExchangeOffer(senderOrderId, recepientOrderId);
+            Database.AcceptExchangeOffer(offer);
         }
 
         public List<ExchangeOrderOffer> GetConductedExchangeOrderOffers(string email)
@@ -119,14 +125,58 @@ namespace BarterExchange.Data.Services
             return Database.CheckExchangeOrdersByUserEmail(email);
         }
 
-        public List<ExchangeOrder> GetRelevantExchnageOrders(string email, int value)
+        public List<List<ExchangeOrder>> GetRelevantExchnageOrders(string email, int value)
         {
             return Database.GetRelevantExchangeOrdersByRecommendation(email, value);    
         }
 
-        public void RejectExchangeOffer(int senderOrderId, int recepientOrderId)
+        public void RejectExchangeOffer(int offerId)
         {
-            Database.RejectExchangeOffer(senderOrderId, recepientOrderId);
+            Database.RejectExchangeOffer(offerId);
+        }
+
+        public bool CheckAvailabilityOrderInLists()
+        {
+            foreach(var o in RecepientOrders) 
+            { 
+                if(o.ExchangeOrderId == CurrentExchangeOrder.ExchangeOrderId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void ReloadLists(ExchangeOrder order)
+        {
+            SenderOrders.Clear();
+            RecepientOrders.Clear();
+            RecepientOrders.Add(order);
+        }
+
+        public bool CheckFullnessList()
+        {
+            return SenderOrders.Count() > 0 && RecepientOrders.Count() > 0;
+        }
+
+        private List<int> GetOrdersId(List<ExchangeOrder> list)
+        {
+            List<int> newList = new List<int>();
+
+            foreach(var order in list) 
+            { 
+                newList.Add(order.ExchangeOrderId);
+            }
+
+            newList.Sort();
+            return newList;
+        }
+
+        public void ClearLists()
+        {
+            SenderOrders.Clear();
+            RecepientOrders.Clear();
         }
     }
 }

@@ -2,6 +2,8 @@
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using System.Collections;
+using System.Collections.Generic;
 using static MudBlazor.CategoryTypes;
 
 namespace BarterExchange.Data.Classes
@@ -247,13 +249,11 @@ namespace BarterExchange.Data.Classes
             collection.InsertOne(offer);
         }
 
-        public static ExchangeOrderOffer GetExchangeOrderOfferByTwoId(int senderOrderId, int recipientOrderId)
+        public static ExchangeOrderOffer GetExchangeOrderOfferById(int offerId)
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
 
-            return collection.Find(x => x.SenderExchangeOrderId == senderOrderId 
-                && x.RecipientExchangeOrderId == recipientOrderId || x.RecipientExchangeOrderId == senderOrderId
-                && x.SenderExchangeOrderId == recipientOrderId).FirstOrDefault();
+            return collection.Find(x => x.ExchangeOfferId == offerId).FirstOrDefault();
         }
 
         public static List<ExchangeOrderOffer> GetExchangeOffersBySenderEmail(string senderEmail)
@@ -270,16 +270,20 @@ namespace BarterExchange.Data.Classes
             return collection.Find(x => x.RecipientEmail == recipientEmail && x.IsConducted == false).ToList();
         }
 
-        public static void AcceptExchangeOffer(int senderOrderId, int recipientOrderId)
+        public static void AcceptExchangeOffer(ExchangeOrderOffer offer)
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
-            var filter1 = Builders<ExchangeOrderOffer>.Filter.Eq("SenderExchangeOrderId", senderOrderId);
-            var filter2 = Builders<ExchangeOrderOffer>.Filter.Eq("RecipientExchangeOrderId", recipientOrderId);
-            var filter = Builders<ExchangeOrderOffer>.Filter.And(filter1, filter2);
+            var filter = Builders<ExchangeOrderOffer>.Filter.Eq("ExchangeOfferId", offer.ExchangeOfferId);
             var update = Builders<ExchangeOrderOffer>.Update.Set("IsConducted", true);
 
-            ConductExchangeOrder(senderOrderId);
-            ConductExchangeOrder(recipientOrderId);
+            foreach(var s in offer.SenderExchangeOrdersId)
+            {
+                ConductExchangeOrder(s);
+            }
+            foreach(var r in offer.RecipientExchangeOrdersId)
+            {
+                ConductExchangeOrder(r);
+            }
 
             collection.UpdateOne(filter, update);
         }
@@ -354,11 +358,7 @@ namespace BarterExchange.Data.Classes
             {
                 var type = GetItemTypeById(order.ItemTypeId);
 
-                foreach(var userOrder in userOrders)
-                {
-                    var userType = GetItemTypeById(userOrder.ItemTypeId);
-
-                    if (userType.Value >= type.Value * (1 - VALUE_PROCENT) && userType.Value <= type.Value * (1 + VALUE_PROCENT))
+                    if (GetRelevantExchangeOrdersByRecommendation(email, type.Value).Count() != 0)
                     {
                         if(!ordersList.Contains(order))
                         {
@@ -366,7 +366,6 @@ namespace BarterExchange.Data.Classes
                         }      
                         continue;
                     }
-                }
             }
 
             return ordersList;
@@ -379,26 +378,59 @@ namespace BarterExchange.Data.Classes
             return collection.Find(x => x.CreatorEmail == email).FirstOrDefault() != null;
         }
 
-        public static List<ExchangeOrder> GetRelevantExchangeOrdersByRecommendation(string email, int value)
+        public static List<List<ExchangeOrder>> GetRelevantExchangeOrdersByRecommendation(string email, int value)
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
-            var orderList = new List<ExchangeOrder>();
+            var ordersList = new List<List<int>>();
+            var ordersId = new List<int>();
+            var readyOrders = new List<List<ExchangeOrder>>();
             var orders = collection.Find(x => x.CreatorEmail == email && x.IsConducted == false).ToList();
-            
-            foreach( var order in orders)
-            {
-                var itemType = GetItemTypeById(order.ItemTypeId);
 
-                if (itemType.Value * (1 - VALUE_PROCENT) <= value && itemType.Value * (1 + VALUE_PROCENT) >= value)
-                {
-                    orderList.Add(order);
-                }
-                
+            foreach ( var order in orders)
+            {
+                ordersId.Add(order.ExchangeOrderId);
             }
 
-            return orderList;
+            for(var i = 1; i <= orders.Count(); i++ )
+            {
+                var result = GetKCombs(ordersId, i);
+                var resultList = new List<List<int>>();
+
+                foreach(var r in result)
+                {
+                    resultList.Add(r.ToList());
+                }
+                ordersList.AddRange(resultList);
+            }
+
+            foreach (var o in ordersList)
+            {
+                var val = 0;
+                var list = new List<ExchangeOrder>();
+                foreach(var id in o)
+                {
+                    var ord = GetExchangeOrderById(id);
+                    list.Add(ord);
+                    var itemType = GetItemTypeById(ord.ItemTypeId);
+                    val += itemType.Value;
+                }
+
+                if (val * (1 - VALUE_PROCENT) <= value && val * (1 + VALUE_PROCENT) >= value)
+                {
+                    readyOrders.Add(list);
+                }
+            }
+
+            return readyOrders;
         }
 
+        static IEnumerable<IEnumerable<T>>GetKCombs<T>(IEnumerable<T> list, int length) where T : IComparable
+        {
+            if (length == 1) return list.Select(t => new T[] { t });
+            return GetKCombs(list, length - 1)
+                .SelectMany(t => list.Where(o => o.CompareTo(t.Last()) > 0),
+                    (t1, t2) => t1.Concat(new T[] { t2 }));
+        }
         public static void EditUser(User user)
         {
             var collection = database.GetCollection<User>("Users");
@@ -406,14 +438,11 @@ namespace BarterExchange.Data.Classes
             collection.ReplaceOne(x => x.Email == user.Email, user);
         }
 
-        public static void RejectExchangeOffer(int senderOrderId, int recipientOrderId)
+        public static void RejectExchangeOffer(int offerId)
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
 
-            var offer = GetExchangeOrderOfferByTwoId(senderOrderId, recipientOrderId);
-
-            collection.DeleteOne(x => x.SenderExchangeOrderId == offer.SenderExchangeOrderId 
-                && x.RecipientExchangeOrderId == offer.RecipientExchangeOrderId);
+            collection.DeleteOne(x => x.ExchangeOfferId == offerId);
         }
 
         public static bool CheckItemTypeAvailabilityOfOrder(int itemTypeId)
@@ -421,6 +450,47 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
 
             return collection.Find(x => x.ItemTypeId == itemTypeId).FirstOrDefault() != null;
+        }
+
+        public static int GetLastExchangeOfferId()
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            var offer = collection.Find(x => x.ExchangeOfferId != 0).FirstOrDefault();
+
+            if(offer != null)
+            {
+                return offer.ExchangeOfferId;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static bool CheckExchangeOrderOffer(ExchangeOrderOffer offer)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            var list = collection.Find(x => x.ExchangeOfferId != 0).ToList();
+
+            foreach(var of in list)
+            {
+                if(new HashSet<int>(of.SenderExchangeOrdersId).SetEquals(offer.SenderExchangeOrdersId) 
+                    && new HashSet<int>(of.RecipientExchangeOrdersId).SetEquals(offer.RecipientExchangeOrdersId))
+                {
+                    return true;
+                }
+
+
+                if (new HashSet<int>(of.SenderExchangeOrdersId).SetEquals(offer.RecipientExchangeOrdersId)
+                    && new HashSet<int>(of.RecipientExchangeOrdersId).SetEquals(offer.SenderExchangeOrdersId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     } 
 }

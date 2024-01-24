@@ -99,7 +99,8 @@ else
             EncryptData();
             User user = new User(regName, regSurname, regEmail, regPhoneNumber, regPass);
             UserService.RegisterUser(user);
-            UserService.AuthorizeUser(user.Email, user.Password);
+            UserService.AuthorizeUser(UserService.EncodeDecrypt(user.Email, Storage.Key), 
+                UserService.EncodeDecrypt(user.Password, Storage.Key));
             isError = false;
             ClearPage();
             Navigation.NavigateTo("/");

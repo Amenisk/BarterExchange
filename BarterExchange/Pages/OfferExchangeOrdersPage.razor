@@ -4,11 +4,18 @@
 
 @if(ExchangeOrderService.ValueItemType == 0)
 {
-    <OrderListComponent AllExchangeOrders="ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsOfferOrders="true"></OrderListComponent>
+    @if(ExchangeOrderService.IsSenderOrders)
+    {
+        <OrderListComponent AllExchangeOrders="ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsOfferOrders="true"></OrderListComponent>
+    }
+    else
+    {
+        <OrderListComponent AllExchangeOrders="ExchangeOrderService.GetCreatedExchangeOrders(ExchangeOrderService.CurrentExchangeOrder.CreatorEmail)" IsOfferOrders="true"></OrderListComponent>
+    }
 }
 else
 {
-    <OrderListComponent AllExchangeOrders="ExchangeOrderService.GetRelevantExchnageOrders(UserService.CurrentUser.Email, ExchangeOrderService.ValueItemType)" IsOfferOrders="true"></OrderListComponent>
+    <OrderListComponent RecomendedOrders="ExchangeOrderService.GetRelevantExchnageOrders(UserService.CurrentUser.Email, ExchangeOrderService.ValueItemType)" IsOfferOrders="true"></OrderListComponent>
 }
 
 
