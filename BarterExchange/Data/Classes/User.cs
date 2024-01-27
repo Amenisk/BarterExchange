@@ -13,6 +13,8 @@ namespace BarterExchange.Data.Classes
         public string PhoneNumber { get; private set; }
         public string Password { get; private set; }
         public string Role { get; private set; }
+        public int VipLevel { get; private set; }
+        public DateTime EndDateVipLevel { get; private set; }
 
         public User(string name, string surname, string email, 
             string phoneNumber, string password) 
@@ -23,6 +25,18 @@ namespace BarterExchange.Data.Classes
             PhoneNumber = phoneNumber;
             Password = password;
             Role = "User";
+            VipLevel = 0;
+            EndDateVipLevel = DateTime.Now;
+        }
+
+        public void SetLevel(int level)
+        {
+            VipLevel = level;
+        }
+
+        public void SetEndDateVipLevel(DateTime date) 
+        {
+            EndDateVipLevel = date;
         }
     }
 }

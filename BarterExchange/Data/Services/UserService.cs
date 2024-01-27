@@ -95,6 +95,25 @@ namespace BarterExchange.Data.Services
             return character;
         }
 
+        public void BuyVipLevel(string email, int vipLevel, int countDays)
+        {
+            Database.BuyVipLevel(email, vipLevel, countDays);
+            CurrentUser.SetLevel(vipLevel);
+            if (CurrentUser.EndDateVipLevel.Date < DateTime.Now.Date)
+            {
+                CurrentUser.SetEndDateVipLevel(DateTime.Now.AddDays(countDays));
+            }
+            else
+            {
+                CurrentUser.SetEndDateVipLevel(CurrentUser.EndDateVipLevel.AddDays(countDays));
+            }
+        }
+
+        public void ReloadVipLevel() 
+        { 
+            Database.ReloadVipLevel(); 
+        }
+
 
     }
 }

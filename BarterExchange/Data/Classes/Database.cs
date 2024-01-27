@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Identity;
+using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
@@ -11,6 +12,7 @@ namespace BarterExchange.Data.Classes
     public static class Database
     {
         private const double VALUE_PROCENT = 0.1;
+        private const int MAX_LEVEL = 3;
         static MongoClient client = new MongoClient("mongodb://localhost");
         static IMongoDatabase database = client.GetDatabase("BarterExchangeService");
         public static void SaveUser(User user)
@@ -176,8 +178,22 @@ namespace BarterExchange.Data.Classes
         public static List<ExchangeOrder> GetAllExchangeOrders()
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var list = new List<ExchangeOrder>();
 
-            return collection.Find(x => x.IsConducted == false).ToList();
+            for(int i = MAX_LEVEL; i >= 0; i--)
+            {
+                foreach (var order in collection.Find(x => x.IsConducted == false).ToList())
+                {
+                    var user = GetUserByEmail(order.CreatorEmail);
+
+                    if(user.VipLevel == i)
+                    {
+                        list.Add(order);
+                    }
+                }
+            }
+
+            return list;
         }
 
         public static ExchangeOrder GetExchangeOrderById(int id)
@@ -491,6 +507,43 @@ namespace BarterExchange.Data.Classes
             }
 
             return false;
+        }
+
+        public static void BuyVipLevel(string email, int level, int countDays)
+        {
+            var collection = database.GetCollection<User>("Users");
+            var user = collection.Find(x => x.Email == email).FirstOrDefault();
+
+            user.SetLevel(level);
+            if(user.EndDateVipLevel.Date < DateTime.Now.Date)
+            {
+                user.SetEndDateVipLevel(DateTime.Now.AddDays(countDays));
+            }
+            else
+            {
+                user.SetEndDateVipLevel(user.EndDateVipLevel.AddDays(countDays));
+            }
+           
+            collection.ReplaceOne(x => x.Email == user.Email, user);
+        }
+
+        public static void ReloadVipLevel()
+        {
+            var collection = database.GetCollection<User>("Users");
+
+            
+            var update = Builders<User>.Update.Set("VipLevel", 0);           
+        
+
+            foreach(var user in collection.Find(x => x.Email != null).ToList())
+            {
+                var filter = Builders<User>.Filter.Eq("Email", user.Email);
+
+                if(user.EndDateVipLevel.Date < DateTime.Now.Date)
+                {
+                    collection.UpdateOne(filter, update);
+                }                
+            }
         }
     } 
 }

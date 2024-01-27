@@ -2,40 +2,55 @@
 @inject UserService UserService
 @inject NavigationManager Navigation
 
-<div class="card" style="width: 50%; margin: 100px 25% 0 25%">
-    <div class="card-header">
-        <h3 style="display: flex; justify-content:center">Профиль</h3>
+@if (UserService.CurrentUser != null)
+{
+    <div class="card" style="width: 50%; margin: 100px 25% 0 25%">
+        <div class="card-header">
+            <h3 style="display: flex; justify-content:center">Профиль</h3>
+            @if(UserService.CurrentUser.VipLevel != 0)
+            {
+                <Tooltip Title="Дата окончания подписки: @UserService.CurrentUser.EndDateVipLevel.AddDays(1).ToShortDateString()">
+                    <NavLink style="display: flex; justify-content:right" href="buy-vip-level">Уровень приоритетности - @UserService.CurrentUser.VipLevel</NavLink>
+                </Tooltip>
+            }
+            else
+            {
+                <NavLink style="display: flex; justify-content:right" href="buy-vip-level">Уровень приоритетности - @UserService.CurrentUser.VipLevel</NavLink>
+            }
+
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <MudText Style="font-size: 24px">Имя: </MudText>
+                <MudTextField @bind-Value="name" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+            </div>
+            <div class="form-group" >
+                <MudText Style="font-size: 24px; margin: 3% 0 0 0">Фамилия: </MudText>
+                <MudTextField @bind-Value="surname" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+            </div>
+            <div class="form-group" >
+                <MudText Style="font-size: 24px; margin: 3% 0 0 0">Email: </MudText>
+                <MudTextField @bind-Value="email" ReadOnly="true" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+            </div>
+            <div class="form-group">
+                <MudText Style="font-size: 24px; margin: 3% 0 0 0">Телефон: </MudText>
+                <MudTextField @bind-Value="phoneNumber" ReadOnly="true" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
+            </div>
+            <div class="form-group">
+                <MudText Style="font-size: 24px; margin: 3% 0 0 0">Пароль: </MudText>
+                <MudTextField @bind-Value="password" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text" InputType="@PasswordInput" Adornment="Adornment.End"
+                              AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestClick" AdornmentAriaLabel="Показать пароль"></MudTextField>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <button class="btn btn-primary" @onclick=EditProfile>@editProfileText</button>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                <button class="btn btn-primary" @onclick=LogOut>Выйти из аккаунта</button>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <div class="form-group">
-            <MudText Style="font-size: 24px">Имя: </MudText>
-            <MudTextField @bind-Value="name" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
-        </div>
-        <div class="form-group" >
-            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Фамилия: </MudText>
-            <MudTextField @bind-Value="surname" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
-        </div>
-        <div class="form-group" >
-            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Email: </MudText>
-            <MudTextField @bind-Value="email" ReadOnly="true" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
-        </div>
-        <div class="form-group">
-            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Телефон: </MudText>
-            <MudTextField @bind-Value="phoneNumber" ReadOnly="true" Style="font-size: 24px" Immediate="true" Variant="Variant.Text"></MudTextField>
-        </div>
-        <div class="form-group">
-            <MudText Style="font-size: 24px; margin: 3% 0 0 0">Пароль: </MudText>
-            <MudTextField @bind-Value="password" ReadOnly="readOnly" HelperText="@helperText" Style="font-size: 24px" Immediate="true" Variant="Variant.Text" InputType="@PasswordInput" Adornment="Adornment.End"
-                          AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestClick" AdornmentAriaLabel="Показать пароль"></MudTextField>
-        </div>
-        <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
-            <button class="btn btn-primary" @onclick=EditProfile>@editProfileText</button>
-        </div>
-        <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
-            <button class="btn btn-primary" @onclick=LogOut>Выйти из аккаунта</button>
-        </div>
-    </div>
-</div>
+}
+
 
 @code {
     string name = "";
@@ -93,6 +108,8 @@
             {
                 EncryptData();
                 var user = new User(name, surname, email, phoneNumber, password);
+                user.SetLevel(UserService.CurrentUser.VipLevel);
+                user.SetEndDateVipLevel(UserService.CurrentUser.EndDateVipLevel);
                 UserService.EditUserProfile(user);
                 EncryptData();
             }
