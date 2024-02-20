@@ -14,6 +14,15 @@
                 @foreach (var exch in ExchangeOrderService.SenderOrders)
                 {
                     <MudCard Outlined="true" style="width: 280; margin: 2%">
+                        <MudCardHeader Style="height: 20px">
+                            <CardHeaderAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" OnClick="() => RemoveOrder(exch)" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
                         <MudCardContent>
                             <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                         </MudCardContent>
@@ -35,6 +44,15 @@
                 @foreach (var exch in ExchangeOrderService.RecepientOrders)
                 {
                     <MudCard Outlined="true" style="width: 280; margin: 2%">
+                        <MudCardHeader Style="height: 20px">
+                            <CardHeaderAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" OnClick="() => RemoveOrder(exch)" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
                         <MudCardContent >
                             <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                         </MudCardContent>
@@ -104,5 +122,40 @@
         ExchangeOrderService.ClearLists();
         Navigation.NavigateTo("/main");
         Snackbar.Add("Предложение обмена успешно создано!", Severity.Success);
+    }
+
+    public void RemoveOrder(ExchangeOrder order)
+    {
+        if(order.ExchangeOrderId == ExchangeOrderService.RecepientOrders.First().ExchangeOrderId)
+        {
+            Snackbar.Add("Нельзя удалять первоначальный предмет обмена!", Severity.Error);
+            return;
+        }
+
+        if(ExchangeOrderService.ValueItemType != 0)
+        {
+            Snackbar.Add("Нельзя удалять предметы из рекомендованного обмена!", Severity.Error);
+            return;
+        }
+
+        foreach(var o in ExchangeOrderService.SenderOrders)
+        {
+            if(order.ExchangeOrderId == o.ExchangeOrderId)
+            {
+                ExchangeOrderService.SenderOrders.Remove(o);
+                Snackbar.Add("Предмет успешно удален из создаваемого предложения обмена!", Severity.Success);
+                return;
+            }
+        }
+
+        foreach (var o in ExchangeOrderService.RecepientOrders)
+        {
+            if (order.ExchangeOrderId == o.ExchangeOrderId)
+            {
+                ExchangeOrderService.RecepientOrders.Remove(o);
+                Snackbar.Add("Предмет успешно удален из создаваемого предложения обмена!", Severity.Success);
+                return;
+            }
+        }
     }
 }
