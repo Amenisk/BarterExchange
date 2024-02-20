@@ -6,7 +6,7 @@
 @inject ItemService ItemService
 @inject ExchangeOrderService ExchangeOrderService
 
-@if(!IsCreatedOrders && !IsOfferOrders)
+@if(!IsCreatedOrders && !IsOfferOrders && !IsTargetOrder)
 {
     <div class="card">
         <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
@@ -57,9 +57,7 @@ else
                         @foreach (var o in exch)
                         {
                             <MudCardActions style="display: flex; justify-content:center">
-
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch)">@ExchangeOrderService.CutName(o.Title)</MudButton>
-                        
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch)">@ExchangeOrderService.CutName(o.Title)</MudButton>                        
                             </MudCardActions>
                         }
                     </MudCard>
@@ -88,6 +86,8 @@ else
     public bool IsCreatedOrders { get; set; }
     [Parameter]
     public bool IsOfferOrders { get; set; }
+    [Parameter]
+    public bool IsTargetOrder{ get; set; }
     bool isError;
     string errorMessage = "";
     string searchText = "";
@@ -129,10 +129,13 @@ else
                 }
             }
 
-            foreach (var r in removedOrders)
+            if(IsOfferOrders)
             {
-                AllExchangeOrders.Remove(r);
-            }
+                foreach (var r in removedOrders)
+                {
+                    AllExchangeOrders.Remove(r);
+                }
+            }         
         }    
     }
 
@@ -153,15 +156,16 @@ else
             }
 
             Navigation.NavigateTo("/main-offer");
-
-            if(ExchangeOrderService.ValueItemType != 0)
-            {
-                ExchangeOrderService.ValueItemType = 0;
-            }
             return;
         }
 
         ExchangeOrderService.ChangeCurrentExchangeOrder(id);
+
+        if(IsTargetOrder)
+        {
+            Navigation.NavigateTo("/create-target");
+            return;
+        }
 
         if(IsCreatedOrders == false)
         {

@@ -1,0 +1,10 @@
+﻿@page "/select-start-order"
+
+@inject ExchangeOrderService ExchangeOrderService
+@inject UserService UserService
+
+<OrderListComponent AllExchangeOrders="@ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsTargetOrder="true"></OrderListComponent>
+
+@code {
+
+}

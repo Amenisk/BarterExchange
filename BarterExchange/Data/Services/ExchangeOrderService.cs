@@ -6,11 +6,11 @@ namespace BarterExchange.Data.Services
     {
         public ExchangeOrder CurrentExchangeOrder { get; private set; }
         public int ValueItemType { get; set; }
-
         public bool IsSenderOrders { get; set; }    
-
+        public bool IsTargetOrder { get; set; }
+        public Target CurrentTarget { get; set; }   
+        public ExchangeOrderOffer SelectedOffer { get; set; }
         public List<ExchangeOrder> SenderOrders { get; set; } = new List<ExchangeOrder>();
-
         public List<ExchangeOrder> RecepientOrders { get; set; } = new List<ExchangeOrder>();
 
         public int GetLastId()
@@ -47,12 +47,7 @@ namespace BarterExchange.Data.Services
 
         public List<ExchangeOrder> GetCreatedExchangeOrders(string email)
         {
-            return Database.GetExchangeOrdersByCreatorEmailAndConduct(email, false);
-        }
-
-        public List<ExchangeOrder> GetConductedExchangeOrders(string email)
-        {
-            return Database.GetExchangeOrdersByCreatorEmailAndConduct(email, true);
+            return Database.GetExchangeOrdersByCreatorEmail(email);
         }
 
         public ExchangeOrder GetExchangeOrder(int id)
@@ -63,11 +58,6 @@ namespace BarterExchange.Data.Services
         public void ChangeCurrentExchangeOrder(int id)
         {
             CurrentExchangeOrder = GetExchangeOrder(id);
-        }
-
-        public void ConductExchangeOrder(int id)
-        {
-            Database.ConductExchangeOrder(id);
         }
 
         public void DeleteExchangeOrder(int id)
@@ -189,6 +179,60 @@ namespace BarterExchange.Data.Services
             {
                 return name.Substring(0, 22) + "...";
             }
+        }
+
+        public List<Target> GetAllTargetsByUserEmail(string userEmail)
+        {
+            return Database.GetAllTargetsByUserEmail(userEmail);
+        }
+
+        public void SaveTarget(Target target)
+        {
+            Database.SaveTarget(target);
+        }
+
+        public void ChangeTargetItemName(int targetId,  string newName)
+        {
+            Database.ChangeTargetItemName(targetId, newName);
+        }
+
+        public void DeleteTarget(int targetId)
+        {
+            Database.DeleteTarget(targetId);
+        }
+
+        public void FinalTarget(int targetId)
+        {
+            Database.FinalTarget(targetId);
+        }
+
+        public void CancelFinalTarget(int targetId)
+        {
+            Database.CancelFinalTarget(targetId);
+        }
+
+        public List<ExchangeOrderOffer> GetAvailableOrdersId(int targetId)
+        {
+            return Database.GetAvailableOrdersIdByTargetId(targetId);
+        }
+
+        public void UpdateTarget(Target target)
+        {
+            Database.UpdateTarget(target);
+        }
+
+        public ExchangeOrderOffer GetExchangeOfferById(int offerId)
+        {
+            return Database.GetOfferById(offerId);
+        }
+
+        public void ClearAll()
+        {
+            IsTargetOrder = false;
+            IsSenderOrders = false;
+            ClearLists();
+            CurrentExchangeOrder = null;
+            CurrentTarget = null;
         }
     }
 }

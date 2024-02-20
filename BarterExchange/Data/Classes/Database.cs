@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BarterExchange.Data.Services;
+using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using SharpCompress.Compressors.Xz;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using static MudBlazor.CategoryTypes;
 
 namespace BarterExchange.Data.Classes
@@ -182,7 +186,7 @@ namespace BarterExchange.Data.Classes
 
             for(int i = MAX_LEVEL; i >= 0; i--)
             {
-                foreach (var order in collection.Find(x => x.IsConducted == false).ToList())
+                foreach (var order in collection.Find(x => !x.IsDeleted).ToList())
                 {
                     var user = GetUserByEmail(order.CreatorEmail);
 
@@ -217,20 +221,11 @@ namespace BarterExchange.Data.Classes
             return collection.Find(x => x.ItemCategoryId == id).FirstOrDefault();
         }
 
-        public static List<ExchangeOrder> GetExchangeOrdersByCreatorEmailAndConduct(string creatorEmail, bool isConducted)
+        public static List<ExchangeOrder> GetExchangeOrdersByCreatorEmail(string creatorEmail)
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
 
-            return collection.Find(x =>x.CreatorEmail == creatorEmail && x.IsConducted == isConducted).ToList();
-        }
-
-        public static void ConductExchangeOrder(int id)
-        {
-            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
-            var filter = Builders<ExchangeOrder>.Filter.Eq("ExchangeOrderId", id);
-            var update = Builders<ExchangeOrder>.Update.Set("IsConducted", true);
-
-            collection.UpdateOne(filter, update);
+            return collection.Find(x =>x.CreatorEmail == creatorEmail && !x.IsDeleted).ToList();
         }
 
         public static void DeletePhoto(string photoName)
@@ -245,10 +240,10 @@ namespace BarterExchange.Data.Classes
         public static void DeleteExchangeOrder(int id)
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
-            var order = collection.Find(x => x.ExchangeOrderId == id).FirstOrDefault();
-            DeletePhoto(order.PhotoName);
+            var filter = Builders<ExchangeOrder>.Filter.Eq("ExchangeOrderId", id);
+            var update = Builders<ExchangeOrder>.Update.Set("IsDeleted", true);
 
-            collection.DeleteOne(x => x.ExchangeOrderId == id);           
+            collection.UpdateOne(filter, update);           
         }
 
         public static void ReplaceExchangeOrder(ExchangeOrder order)
@@ -290,16 +285,27 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
             var filter = Builders<ExchangeOrderOffer>.Filter.Eq("ExchangeOfferId", offer.ExchangeOfferId);
-            var update = Builders<ExchangeOrderOffer>.Update.Set("IsConducted", true);
+            var update1 = Builders<ExchangeOrderOffer>.Update.Set("IsConducted", true);
+            var update2 = Builders<ExchangeOrderOffer>.Update.Set("AcceptDate", DateTime.Now);
+            collection.UpdateOne(filter, update1);
+            collection.UpdateOne(filter, update2);
 
-            foreach(var s in offer.SenderExchangeOrdersId)
+            foreach (var id in offer.RecipientExchangeOrdersId)
             {
-                ConductExchangeOrder(s);
+                ExchangeOrder(id, offer.SenderEmail);
             }
-            foreach(var r in offer.RecipientExchangeOrdersId)
+
+            foreach (var id in offer.SenderExchangeOrdersId)
             {
-                ConductExchangeOrder(r);
+                ExchangeOrder(id, offer.RecipientEmail);
             }
+        }
+        
+        private static void ExchangeOrder(int orderId, string creatorEmail)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var filter = Builders<ExchangeOrder>.Filter.Eq("ExchangeOrderId", orderId);
+            var update = Builders<ExchangeOrder>.Update.Set("CreatorEmail", creatorEmail);
 
             collection.UpdateOne(filter, update);
         }
@@ -320,7 +326,7 @@ namespace BarterExchange.Data.Classes
             bool isContinue;
 
 
-            foreach (var item in collection.Find(x => !x.IsConducted).ToList())
+            foreach (var item in collection.Find(x => x.Title != null).ToList())
             {
                 isContinue = false;
 
@@ -366,8 +372,8 @@ namespace BarterExchange.Data.Classes
         public static List<ExchangeOrder> GetRecomendedOrdersByUserEmail(string email)
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
-            var orders = collection.Find(x => x.IsConducted == false && x.CreatorEmail != email).ToList();
-            var userOrders = collection.Find(x => x.IsConducted == false && x.CreatorEmail == email).ToList();
+            var orders = collection.Find(x => x.CreatorEmail != email && x.IsDeleted == false).ToList();
+            var userOrders = collection.Find(x => x.CreatorEmail == email && x.IsDeleted == false).ToList();
             var ordersList = new List<ExchangeOrder>(); 
 
             foreach(var order in orders)
@@ -400,7 +406,7 @@ namespace BarterExchange.Data.Classes
             var ordersList = new List<List<int>>();
             var ordersId = new List<int>();
             var readyOrders = new List<List<ExchangeOrder>>();
-            var orders = collection.Find(x => x.CreatorEmail == email && x.IsConducted == false).ToList();
+            var orders = collection.Find(x => x.CreatorEmail == email && x.IsDeleted == false).ToList();
 
             foreach ( var order in orders)
             {
@@ -472,7 +478,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
 
-            var offer = collection.Find(x => x.ExchangeOfferId != 0).FirstOrDefault();
+            var offer = collection.Find(x => x.ExchangeOfferId != 0).ToList().LastOrDefault();
 
             if(offer != null)
             {
@@ -488,7 +494,7 @@ namespace BarterExchange.Data.Classes
         {
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
 
-            var list = collection.Find(x => x.ExchangeOfferId != 0).ToList();
+            var list = collection.Find(x => !x.IsConducted).ToList();
 
             foreach(var of in list)
             {
@@ -544,6 +550,126 @@ namespace BarterExchange.Data.Classes
                     collection.UpdateOne(filter, update);
                 }                
             }
+        }
+
+        public static List<Target> GetAllTargetsByUserEmail(string  userEmail)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+
+            return collection.Find(x => x.CreatorEmail == userEmail).ToList();
+        }
+
+        public static int GetLastTargetId()
+        {
+            var collection = database.GetCollection<Target>("Targets");
+            var target = collection.Find(x => x.TargetId != 0).ToList().LastOrDefault();    
+
+            if(target != null)
+            {
+                return target.TargetId;
+            }
+            else
+            {
+                return 0;
+            }
+
+        }
+
+        public static void SaveTarget(Target target)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+
+            collection.InsertOne(target);
+        }
+
+        public static void ChangeTargetItemName(int  targetId, string newName)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+            var filter = Builders<Target>.Filter.Eq("TargetId", targetId);
+            var update = Builders<Target>.Update.Set("TargetNameItem", newName);
+
+            collection.UpdateOne(filter, update);
+        }
+
+        public static void DeleteTarget(int targetId)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+
+            collection.DeleteOne(x => x.TargetId == targetId);
+        }
+
+        public static void FinalTarget(int  targetId)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+            var filter = Builders<Target>.Filter.Eq("TargetId", targetId);
+            var update = Builders<Target>.Update.Set("EndDate", DateTime.Now);
+
+            collection.UpdateOne(filter, update);
+        }
+
+        public static void CancelFinalTarget(int targetId)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+            var filter = Builders<Target>.Filter.Eq("TargetId", targetId);
+            var update = Builders<Target>.Update.Set("EndDate", DateTime.MinValue);
+
+            collection.UpdateOne(filter, update);
+        }
+
+        public static List<ExchangeOrderOffer> GetAvailableOrdersIdByTargetId(int targetId)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+            var target = collection.Find(x => x.TargetId == targetId).FirstOrDefault();
+            var offersList = GetConductedSenderOffers(target.CreatorEmail);
+            var returnOffers = new List<ExchangeOrderOffer>();
+            bool isContainsList;
+
+            foreach(var offer in offersList)
+            {
+                isContainsList = true;
+
+                foreach (var id in offer.SenderExchangeOrdersId)
+                {
+                    if(!target.AvailableOrdersIdList.Contains(id))
+                    {
+                        isContainsList = false;
+                        break;
+                    }
+                }
+
+                if (isContainsList && target.StartDate < offer.AcceptDate)
+                {
+                    returnOffers.Add(offer);
+                    continue;
+                }
+            }
+
+            return returnOffers;
+        }   
+        
+        public static List<ExchangeOrderOffer> GetConductedSenderOffers(string email)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            return collection.Find(x => (x.SenderEmail == email) && x.IsConducted == true).ToList();
+        }
+
+        public static void UpdateTarget(Target target)
+        {
+            var collection = database.GetCollection<Target>("Targets");
+            var filter = Builders<Target>.Filter.Eq("TargetId", target.TargetId);
+            var update1 = Builders<Target>.Update.Set("TargetLevels", target.TargetLevels);
+            var update2 = Builders<Target>.Update.Set("AvailableOrdersIdList", target.AvailableOrdersIdList);
+
+            collection.UpdateOne(filter, update1);
+            collection.UpdateOne(filter, update2);
+        }
+
+        public static ExchangeOrderOffer GetOfferById(int offerId)
+        {
+            var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
+
+            return collection.Find(x =>  x.ExchangeOfferId == offerId).FirstOrDefault();
         }
     } 
 }

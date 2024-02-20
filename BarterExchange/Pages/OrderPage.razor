@@ -7,7 +7,7 @@
 <OrderComponent></OrderComponent>
 @if(UserService.CurrentUser != null && 
     ExchangeOrderService.CurrentExchangeOrder.CreatorEmail != UserService.CurrentUser.Email 
-    && ExchangeOrderService.CurrentExchangeOrder.IsConducted == false && UserService.CurrentUser.Role != "Admin" 
+    && UserService.CurrentUser.Role != "Admin" 
     && !ExchangeOrderService.CheckAvailabilityOrderInLists())
 {
     <div class="form-group" style="display: flex; justify-content:center; margin: 0 0 5% 0">

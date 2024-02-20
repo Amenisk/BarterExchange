@@ -1,0 +1,62 @@
+﻿@page "/create-target"
+
+@inject ExchangeOrderService ExchangeOrderService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<div class="card" style="width: 50%; margin: 100px 25% 0 25%">
+    <div class="card-header">
+        <h3 style="display: flex; justify-content:center">Создание цели</h3>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            @if(startOrder != null)
+            {
+                <MudTextField @bind-Value="startOrder.Title" Label="Название начального предмета" Immediate="true" Variant="Variant.Text" ReadOnly="true"></MudTextField>
+            }
+            
+            <button class="btn btn-primary" style="margin: 5px 0 0 0; display: flex; justify-content:center" @onclick=SelectOrder>Выбрать предмет</button>
+        </div>
+        <div class="form-group">
+            <MudTextField @bind-Value="targetOrderTitle" Label="Название желаемого предмета" Clearable="true" Immediate="true" Variant="Variant.Text"></MudTextField>
+        </div>
+        <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+            <button class="btn btn-primary" @onclick=CreateTarget>Создать цель</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    ExchangeOrder startOrder;
+    string targetOrderTitle = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (ExchangeOrderService.IsTargetOrder)
+        {
+            ExchangeOrderService.IsTargetOrder = false;
+            startOrder = ExchangeOrderService.CurrentExchangeOrder;
+        }
+    }
+
+    private void SelectOrder()
+    {
+        ExchangeOrderService.IsTargetOrder = true;
+        Navigation.NavigateTo("/select-start-order");
+    }
+
+    private void CreateTarget()
+    {
+        if(startOrder != null && targetOrderTitle != "")
+        {
+            ExchangeOrderService.SaveTarget(new Target(startOrder, targetOrderTitle));
+            Navigation.NavigateTo("/main-targets");
+        }
+        else
+        {
+            Snackbar.Add("Заполните все поля!", Severity.Error);
+        }
+    }
+}

@@ -1,8 +1,9 @@
 ﻿@inject UserService UserService
+@inject ExchangeOrderService ExchangeOrderService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="main">Бартерный обмен</a>
+        <a class="navbar-brand" href="main" @onclick="ClearExchangeOrderService">Бартерный обмен</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,18 +15,23 @@
     <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
         <nav class="flex-column">
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="main" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="main" Match="NavLinkMatch.All" @onclick="ClearExchangeOrderService">
                     <span class="oi oi-home" aria-hidden="true"></span> Главная страница
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="make-order">
+                <NavLink class="nav-link" href="make-order" @onclick="ClearExchangeOrderService">
                     <span class="oi oi-plus" aria-hidden="true"></span> Создать обмен
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="order-menu">
+                <NavLink class="nav-link" href="order-menu" @onclick="ClearExchangeOrderService">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Обмены
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="main-targets" @onclick="ClearExchangeOrderService">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Цели
                 </NavLink>
             </div>
         </nav>
@@ -69,5 +75,10 @@ else
     public void Reload()
     {
         base.StateHasChanged();
+    }
+
+    public void ClearExchangeOrderService()
+    {
+        ExchangeOrderService.ClearAll();
     }
 }

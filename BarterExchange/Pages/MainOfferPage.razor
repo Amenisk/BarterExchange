@@ -89,7 +89,7 @@
     private void RecepientOfferExchange()
     {
         isError = false;
-        if (ExchangeOrderService.ValueItemType != 0 && ExchangeOrderService.SenderOrders.Count() != 0)
+        if (ExchangeOrderService.ValueItemType != 0 && ExchangeOrderService.RecepientOrders.Count() != 0)
         {
             isError = true;
             errorMessage = "Предметы для создания рекомендованного обмена уже добавлены";
@@ -101,17 +101,25 @@
 
     private void SaveOfferExchange()
     {
-        if(ExchangeOrderService.CheckExchangeOrderOffer())
+        isError = false;
+
+        if (!ExchangeOrderService.CheckFullnessList())
         {
             isError = true;
-            errorMessage = "Такое же предложение обмена уже существует!";
+            errorMessage = "Для создания обмена предметы должны предоставляться с двух сторон участников обмена!";
             return;
         }
 
-        if(ExchangeOrderService.CheckFullnessList())
+
+        if(ExchangeOrderService.CheckExchangeOrderOffer())
         {
-            ExchangeOrderService.SaveExchageOrderOffer();
-            Navigation.NavigateTo("/main");
+            isError = true;
+            errorMessage = "Такой обмен уже создан!";
+            return;
         }
+
+        ExchangeOrderService.SaveExchageOrderOffer();
+        ExchangeOrderService.ClearLists();
+        Navigation.NavigateTo("/main");
     }
 }

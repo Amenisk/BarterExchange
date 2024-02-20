@@ -1,0 +1,186 @@
+﻿@page "/main-targets"
+@inject ExchangeOrderService ExchangeOrderService
+@inject UserService UserService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+@if (UserService.IsAuthorized())
+{
+    <MudCard Outlined="true">
+        <MudCardContent>
+            <MudTable @bind-SelectedItem="@selectedTarget" Items="@Targets" Hover="true" T="Target" LoadingProgressColor="Color.Info" Style="width: 60%; margin: 0 20% 0 20%" >
+                <HeaderContent>
+                    <MudTh>Начальный предмет</MudTh>
+                    <MudTh>Дата начала</MudTh>
+                    <MudTh>Цель</MudTh>
+                    <MudTh>Дата окончания</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd style="width: 280px; margin: 2%">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToTargetPage(context)">@ExchangeOrderService.CutName(context.StartOrder.Title)</MudButton>
+                    </MudTd>
+                    <MudTd style="width: 280px; margin: 2%">
+                        <MudTextField Value="context.StartDate.ToShortDateString()" ReadOnly="true" Variant="Variant.Text"></MudTextField>
+                    </MudTd>
+                    <MudTd style="width: 280px; margin: 2%">
+                        @if(changeTarget == null || changeTarget != context)
+                        {
+                            <MudTextField Value="context.TargetNameItem" ReadOnly="true" Variant="Variant.Text" />
+                        }
+                        else 
+                        {
+                            <MudTextField @bind-Value="@newTargetItemName" ReadOnly="false" Variant="Variant.Text" />
+                        }
+                    </MudTd>
+                    <MudTd style="width: 280px; margin: 2%">
+                        @if(context.EndDate != DateTime.MinValue)
+                        {
+                            <MudTextField Value="context.EndDate.ToShortDateString()" ReadOnly="true" Variant="Variant.Text" />
+                        }                      
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+            </MudCardContent>
+        <MudCardActions style="display: flex; justify-content:center; margin: 3% 0 0 0">         
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="OpenCreateTargetPage">Создать цель</MudButton>
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="ChangeTargetItem">@changeText</MudButton>
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="DeleteTarget">Удалить цель</MudButton>     
+            @if(selectedTarget == null || selectedTarget.EndDate == DateTime.MinValue)
+            {
+                <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="FinalTarget">Завершить цель</MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="FinalTarget">Отменить завершение</MudButton>
+            }        
+        </MudCardActions>
+    </MudCard>
+}
+else
+{
+    <div class="modal-body">
+        <h5>Авторизируйтесь</h5>
+        <p>Чтобы создать объявление для обмена, нужно сначала авторизироваться</p>
+        <p><button class="btn btn-secondary popover-test" @onclick=NavigateToAuthorization>Авторизоваться</button></p>
+    </div>
+}
+
+
+
+@code {
+    List<Target> Targets;
+    Target selectedTarget;
+    Target changeTarget;
+    string newTargetItemName;
+    string changeText = "Изменить целевой предмет";
+    int targetId;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if(UserService.IsAuthorized())
+        {
+            ReloadTargetsList();
+        }
+    }
+
+    private void OpenOrderPage(int orderId)
+    {
+        ExchangeOrderService.ChangeCurrentExchangeOrder(orderId);
+        Navigation.NavigateTo("/order");
+    }
+
+    public void NavigateToAuthorization()
+    {
+        Navigation.NavigateTo("/authorization");
+    }
+
+    public void OpenCreateTargetPage()
+    {
+        Navigation.NavigateTo("/create-target");
+    }
+
+    public void ChangeTargetItem()
+    {
+        if(changeText == "Изменить целевой предмет")
+        {
+            if (selectedTarget != null)
+            {
+                changeTarget = selectedTarget;
+                changeText = "Сохранить изменения";
+            }
+            else
+            {
+                Snackbar.Add("Сначала выберите цель!", Severity.Error);
+            }
+        }
+        else
+        {
+            if(newTargetItemName != "")
+            {
+                ExchangeOrderService.ChangeTargetItemName(changeTarget.TargetId, newTargetItemName);
+                changeText = "Изменить целевой предмет";
+                newTargetItemName = "";
+                changeTarget = null;
+                selectedTarget = null;
+                ReloadTargetsList();
+                Snackbar.Add("Название целевого предмета успешно изменено!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Введите название целевого предмета!", Severity.Error);
+            }
+        }
+
+    }
+
+    private void ReloadTargetsList()
+    {
+        Targets = ExchangeOrderService.GetAllTargetsByUserEmail(UserService.CurrentUser.Email);
+    }
+
+    public void DeleteTarget()
+    {
+        if (selectedTarget != null)
+        {
+            ExchangeOrderService.DeleteTarget(selectedTarget.TargetId);
+            ReloadTargetsList();
+            Snackbar.Add("Цель успешно удалена!", Severity.Success);
+            selectedTarget = null;
+        }
+        else
+        {
+            Snackbar.Add("Сначала выберите цель!", Severity.Error);
+        }      
+    }
+
+    public void FinalTarget()
+    {
+        if (selectedTarget != null)
+        {
+            if(selectedTarget.EndDate == DateTime.MinValue)
+            {
+                ExchangeOrderService.FinalTarget(selectedTarget.TargetId);
+                Snackbar.Add("Цель успешно завершена!", Severity.Success);
+            }
+            else
+            {
+                ExchangeOrderService.CancelFinalTarget(selectedTarget.TargetId);
+                Snackbar.Add("Отмена завершения цели произошла успешно!", Severity.Success);
+            }
+            selectedTarget = null;
+            ReloadTargetsList();            
+        }
+        else
+        {
+            Snackbar.Add("Сначала выберите цель!", Severity.Error);
+        }
+    }
+
+    public void NavigateToTargetPage(Target target)
+    {
+        ExchangeOrderService.CurrentTarget = target;
+        Navigation.NavigateTo("/target");
+    }
+}

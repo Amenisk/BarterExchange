@@ -13,6 +13,7 @@ namespace BarterExchange.Data.Classes
         public string SenderEmail { get; set; }
         public string RecipientEmail { get; set; }
         public bool IsConducted { get; set; }
+        public DateTime AcceptDate { get; set; }
 
         public ExchangeOrderOffer(List<int> senderExchangeOrdersId, List<int> recipientExchangeOrdersId) 
         { 

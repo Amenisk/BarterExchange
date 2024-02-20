@@ -15,10 +15,10 @@ namespace BarterExchange.Data.Classes
         public int ItemTypeId { get; set; }
         public string PhotoName { get; set; }
         public string CreatorEmail { get; set; }
-        public bool IsConducted { get; set; }
+        public bool IsDeleted { get; set; }
 
         public ExchangeOrder(string title, string description, string exchangeDescription, string contactInformation,
-        int itemTypeId, string photoName, string creatorEmail) 
+            int itemTypeId, string photoName, string creatorEmail) 
         {
             Title = title;
             Description = description;
