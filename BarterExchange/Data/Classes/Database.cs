@@ -644,8 +644,48 @@ namespace BarterExchange.Data.Classes
                 }
             }
 
+            var removingOffers = new List<ExchangeOrderOffer>();    
+            var maxDateTime = GetMaxDateInTarget(target);
+
+            foreach(var offer in returnOffers)
+            {
+                if(offer.AcceptDate <= maxDateTime)
+                {
+                    removingOffers.Add(offer);
+                }               
+            }
+
+            foreach(var offer in removingOffers)
+            {
+                returnOffers.Remove(offer);
+            }
+
             return returnOffers;
         }   
+
+        private static DateTime GetMaxDateInTarget(Target target)
+        {
+            var maxDateTime = DateTime.MinValue;
+
+            foreach(var level in target.TargetLevels)
+            {
+                if (level == target.TargetLevels.Last())
+                {
+                    break;
+                }
+                foreach (var o in level)
+                {             
+                    var offer = GetOfferById(o);
+
+                    if(offer.AcceptDate > maxDateTime)
+                    {
+                        maxDateTime = offer.AcceptDate;
+                    }
+                }
+            }
+
+            return maxDateTime;
+        }
         
         public static List<ExchangeOrderOffer> GetConductedSenderOffers(string email)
         {
