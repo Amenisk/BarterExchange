@@ -63,12 +63,12 @@
             {
                 <div>
                     <div style="display: flex; justify-content:center">
-                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 90px 0 0 0" />
+                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 120px 0 0 0" />
                     </div>
                     @if(!context.IsConducted)
                     {
                     <div>
-                        <button class="btn btn-primary" @onclick=@(() => RejectOffer(context)) style="margin: 50px 0 0 0">Отменить обмен</button>
+                            <button class="btn btn-primary" @onclick=@(() => RejectOffer(context)) style="margin: 15px 0 0 0">Отменить обмен</button>
                     </div>
                     }
                 </div>             
@@ -77,11 +77,11 @@
             {
                 <div>
                     <div style="display: flex; justify-content:center">
-                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 50px 0 0 0" />
+                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 120px 0 0 0" />
                     </div>
                     <div>
-                        <button class="btn btn-primary" @onclick=@(() => AcceptOffer(context)) style="margin: 50px 0 0 0">Принять обмен</button>
-                        <button class="btn btn-primary" @onclick=@(() => RejectOffer(context)) style="margin: 50px 0 0 0">Отклонить обмен</button>
+                        <button class="btn btn-primary" @onclick=@(() => AcceptOffer(context)) style="margin: 15px 0 0 0">Принять обмен</button>
+                        <button class="btn btn-primary" @onclick=@(() => RejectOffer(context)) style="margin: 15px 0 0 0">Отклонить обмен</button>
                     </div>
                 </div>
             }

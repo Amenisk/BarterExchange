@@ -3,6 +3,7 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject NavigationManager Navigation
 @inject UserService UserService
+@inject ISnackbar Snackbar
 
 <MudTable Items="@conductedOffers" Hover="true" @bind-SelectedItem="selectedOffer" LoadingProgressColor="Color.Info" Style="width: 50%; margin: 0 25% 0 25%" @onclick="SelectOffer">
     <HeaderContent>
@@ -61,7 +62,7 @@
             </MudCard>
         </MudTd>
         <MudTd Style="display: flex; justify-content:center">     
-                <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 90px 0 0 0" />
+                <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 130px 0 0 0" />
         </MudTd>
         <MudTd style="width: 280px; margin: 2%">
             <MudCard Outlined="true">
@@ -136,13 +137,17 @@
 
     public void OpenOrderPage(int id)
     {
-        ExchangeOrderService.ChangeCurrentExchangeOrder(id);
-        Navigation.NavigateTo("/order");
+            ExchangeOrderService.ChangeCurrentExchangeOrder(id);
+            Navigation.NavigateTo("/order");
     }
 
     public void SelectOffer()
     {
-        ExchangeOrderService.SelectedOffer = selectedOffer;
-        Navigation.NavigateTo("/target");
+        if (ExchangeOrderService.CurrentTarget != null)
+        {
+            ExchangeOrderService.SelectedOffer = selectedOffer;
+            Navigation.NavigateTo("/target");
+            Snackbar.Add("Обмен успешно добавлен в цель!");
+        }
     }
 }
