@@ -1,5 +1,7 @@
 ﻿@page "/create-item-category"
+
 @inject ItemService ItemService
+@inject ISnackbar Snackbar
 
 <div class="card" style="width: 40%; margin: 100px 30% 0 30%">
     <div class="card-header">
@@ -37,18 +39,9 @@
     </div>
 </div>
 
-@if (isError)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
-
 @code {
     string titleItemCategory = "";
     string titleDeletedItemCategory = "";
-    bool isError = false;
-    string errorMessage = "";
     List<string> allTitlesItemCategories = new List<string>();
 
     protected override void OnInitialized()
@@ -59,8 +52,6 @@
 
     private void CreateCategory()
     {
-        isError = false;
-
         if (titleItemCategory != "")
         {
             if (!ItemService.CheckItemCategory(titleItemCategory))
@@ -68,34 +59,31 @@
                 ItemService.CreateItemCategory(new ItemCategory(titleItemCategory));
                 allTitlesItemCategories = ItemService.GetTitlesItemCategories();
                 titleItemCategory = "";
+                Snackbar.Add("Категория предмета успешно добавлена!", Severity.Success);
             }
             else
             {
-                isError = true;
-                errorMessage = "Такая категория уже существует!";
+                Snackbar.Add("Такая категория уже существует!", Severity.Error);
             }
         }
         else
         {
-            isError = true;
-            errorMessage = "Заполните поле названия категории!";
+            Snackbar.Add("Заполните поле названия категории!", Severity.Error);
         }
     }
 
     private void DeleteCategory()
     {
-        isError = false;
-
         if (ItemService.CheckItemCategoryBeforeDelete(titleDeletedItemCategory))
         {
-            isError = true;
-            errorMessage = "Перед удалением категории удалите все типы предметов, связанных с этой категорией";
+            Snackbar.Add("Невозможно удалить данную категорию, так как к ней привязаны типы предметов!", Severity.Error);
         }
         else
         {
             ItemService.DeleteItemCategory(titleDeletedItemCategory);
             allTitlesItemCategories = ItemService.GetTitlesItemCategories();
             titleDeletedItemCategory = "";
+            Snackbar.Add("Категория предмета успешно удалена!", Severity.Success);
         }     
     }
 }

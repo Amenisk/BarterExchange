@@ -2,6 +2,7 @@
 
 @inject UserService UserService
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 <div class="card" style="width: 30%; margin: 100px 25% 0 25%">
     <div class="card-header">
@@ -47,13 +48,6 @@
     </div>
 </div>
 
-@if (isError)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
-
 @code {
     List<String> levelStrings = new List<String>();
     List<String> periods = new List<String> { "День", "Неделя", "Месяц" };
@@ -61,8 +55,6 @@
     String period;
     String cost;
     int countDays;
-    bool isError;
-    string errorMessage;
 
     protected override void OnInitialized()
     {
@@ -72,12 +64,10 @@
         {
             levelStrings.Add($"{i + 1} уровень");
         }
-
     }
 
     private void Buy()
     {
-        isError = false;
         if(cost != null)
         {
             var lvl = int.Parse(levelString.Substring(0, 1));
@@ -85,18 +75,17 @@
             {
                 UserService.BuyVipLevel(UserService.CurrentUser.Email, lvl, countDays);
                 Navigation.NavigateTo("profile");
+                Snackbar.Add($"Подписка {UserService.CurrentUser.VipLevel} уровня действует до {UserService.CurrentUser.EndDateVipLevel.AddDays(1).ToShortDateString()}", Severity.Info);
             }
             else
             {
-                isError = true;
-                errorMessage = "Чтобы купить подписку нового уровня, дождитесь пока закончится текущая подписка!";
+                Snackbar.Add("Чтобы купить подписку нового уровня, дождитесь пока закончится текущая подписка!", Severity.Warning);
             }
         }
     }
 
     public void CalculateCost()
     {
-        isError = false;
         if(levelString != null && period != null)
         {
             if(int.TryParse(levelString.Substring(0, 1), out int level))

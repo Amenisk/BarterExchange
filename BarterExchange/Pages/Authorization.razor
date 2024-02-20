@@ -1,6 +1,7 @@
 ﻿@page "/authorization"
 @inject UserService UserService
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 @if (!UserService.IsAuthorized())
 {
@@ -24,13 +25,6 @@
             </div>
         </div>
     </div>
-
-    @if (isError)
-    {
-        <div class="alert alert-danger" role="alert">
-            @errorMessage
-        </div>
-    }
 }
 else
 {
@@ -44,8 +38,6 @@ else
 @code {
     string regLogin  = "";
     string regPass = "";
-    bool isError = false;
-    string errorMessage = "";
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -59,17 +51,16 @@ else
                 Navigation.NavigateTo("/");
                 Storage.Nav.Reload();
                 ClearPage();
+                Snackbar.Add("Авторизация прошла успешно!", Severity.Success);
             }
             else
             {
-                errorMessage = "Неверный логин или пароль!";
-                isError = true;
+                Snackbar.Add("Неверный логин или пароль!", Severity.Error);
             }
         }
         else
         {
-            errorMessage = "Не все поля заполнены!";
-            isError = true;
+            Snackbar.Add("Не все поля заполнены!", Severity.Error);
         }
     }
 

@@ -1,10 +1,10 @@
 ﻿@inject ExchangeOrderService ExchangeOrderService
 @inject NavigationManager Navigation
 @inject FileSystemService FileSystemService
-
 @inject UserService UserService
 @inject ItemService ItemService
 @inject ExchangeOrderService ExchangeOrderService
+@inject ISnackbar Snackbar
 
 @if(!IsCreatedOrders && !IsOfferOrders && !IsTargetOrder)
 {
@@ -68,15 +68,6 @@ else
 }
 
 
-@if (isError)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
-
-
-
 @code {
     [Parameter]
     public List<ExchangeOrder> AllExchangeOrders { get; set; }
@@ -88,8 +79,6 @@ else
     public bool IsOfferOrders { get; set; }
     [Parameter]
     public bool IsTargetOrder{ get; set; }
-    bool isError;
-    string errorMessage = "";
     string searchText = "";
     bool isRecomendedOrders;
     public List<ExchangeOrder> removedOrders = new List<ExchangeOrder>();
@@ -141,18 +130,18 @@ else
 
     private void OpenOrderPage(int id)
     {
-        isError = false;
-
         if(IsOfferOrders)
         {
 
             if(ExchangeOrderService.IsSenderOrders)
             {
                 ExchangeOrderService.SenderOrders.Add(ExchangeOrderService.GetExchangeOrder(id));
+                Snackbar.Add("Предмет успешно добавлен в список обмена!", Severity.Success);
             }
             else
             {
                 ExchangeOrderService.RecepientOrders.Add(ExchangeOrderService.GetExchangeOrder(id));
+                Snackbar.Add("Предмет успешно добавлен в список обмена!", Severity.Success);
             }
 
             Navigation.NavigateTo("/main-offer");
@@ -164,6 +153,7 @@ else
         if(IsTargetOrder)
         {
             Navigation.NavigateTo("/create-target");
+            Snackbar.Add("Стартовый предмет успешно добавлен в цель!", Severity.Success);
             return;
         }
 
@@ -192,10 +182,12 @@ else
             if (ExchangeOrderService.IsSenderOrders)
             {
                 ExchangeOrderService.SenderOrders.Add(ExchangeOrderService.GetExchangeOrder(o.ExchangeOrderId));
+                Snackbar.Add("Предмет/ы успешно добавлен в список обмена!", Severity.Success);
             }
             else
             {
                 ExchangeOrderService.RecepientOrders.Add(ExchangeOrderService.GetExchangeOrder(o.ExchangeOrderId));
+                Snackbar.Add("Предмет/ы успешно добавлен в список обмена!", Severity.Success);
             }
 
             Navigation.NavigateTo("/main-offer");
@@ -218,8 +210,16 @@ else
     {
         if (check)
         {
-            isRecomendedOrders = true;
-            AllExchangeOrders = ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email);
+            if (ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email).Count != 0)
+            {
+                isRecomendedOrders = true;
+                AllExchangeOrders = ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email);
+                Snackbar.Add("Найдены рекомендованные объявления обмена!", Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add("Нет рекомендованных объявлений обмена!", Severity.Warning);
+            } 
         }
         else
         {

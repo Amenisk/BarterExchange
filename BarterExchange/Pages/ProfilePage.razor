@@ -1,6 +1,8 @@
 ﻿@page "/profile"
+
 @inject UserService UserService
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 @if (UserService.CurrentUser != null)
 {
@@ -112,6 +114,7 @@
                 user.SetEndDateVipLevel(UserService.CurrentUser.EndDateVipLevel);
                 UserService.EditUserProfile(user);
                 EncryptData();
+                Snackbar.Add("Профиль успешно изменен!", Severity.Success);
             }
 
 
@@ -126,6 +129,7 @@
         UserService.LogOut();
         Navigation.NavigateTo("/main");
         Storage.Nav.Reload();
+        Snackbar.Add("Выход из аккаунта произошел успешно!", Severity.Success);
     }  
 
     private void EncryptData()

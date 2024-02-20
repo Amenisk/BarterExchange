@@ -3,6 +3,7 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject UserService UserService
 
 <div class="card" style="width: 50%; margin: 100px 25% 0 25%">
     <div class="card-header">
@@ -43,8 +44,15 @@
 
     private void SelectOrder()
     {
-        ExchangeOrderService.IsTargetOrder = true;
-        Navigation.NavigateTo("/select-start-order");
+        if(ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email).Count() != 0)
+        {
+            ExchangeOrderService.IsTargetOrder = true;
+            Navigation.NavigateTo("/select-start-order");
+        }
+        else
+        {
+            Snackbar.Add("Нет доступных предметов!", Severity.Warning);
+        }
     }
 
     private void CreateTarget()
@@ -53,6 +61,7 @@
         {
             ExchangeOrderService.SaveTarget(new Target(startOrder, targetOrderTitle));
             Navigation.NavigateTo("/main-targets");
+            Snackbar.Add("Цель успешно создана!", Severity.Success);
         }
         else
         {

@@ -1,6 +1,8 @@
 ﻿@page "/registration"
+
 @inject UserService UserService
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
@@ -34,13 +36,6 @@
             </div>
         </div>
     </div>
-
-    @if (isError)
-    {
-        <div class="alert alert-danger" role="alert">
-            @errorMessage
-        </div>
-    }
 }
 else
 {
@@ -57,8 +52,6 @@ else
     string regEmail = "";
     string regPhoneNumber = "";
     string regPass = "";
-    bool isError = false;
-    string errorMessage = "";
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -70,29 +63,25 @@ else
         {
             if (UserService.CheckEmail(regEmail))
             {
-                isError = true;
-                errorMessage = "Пользователь с такой почтой уже существует";
+                Snackbar.Add("Пользователь с такой почтой уже существует!", Severity.Warning);
                 return;
             }
 
             if (UserService.CheckPhoneNumber(regPhoneNumber))
             {
-                isError = true;
-                errorMessage = "Пользователь с таким телефонным номером уже существует";
+                Snackbar.Add("Пользователь с таким телефонным номером уже существует!", Severity.Warning);
                 return;
             }
 
             if (UserService.CheckCorrectEmail(regEmail))
             {
-                isError = true;
-                errorMessage = "Некорректный Email";
+                Snackbar.Add("Некорректный Email!", Severity.Error);
                 return;
             }
 
             if (UserService.CheckCorrectPhoneNumber(regPhoneNumber))
             {
-                isError = true;
-                errorMessage = "Некорректный номер телефона";
+                Snackbar.Add("Некорректный номер телефона!", Severity.Error);
                 return;
             }
 
@@ -101,14 +90,13 @@ else
             UserService.RegisterUser(user);
             UserService.AuthorizeUser(UserService.EncodeDecrypt(user.Email, Storage.Key), 
                 UserService.EncodeDecrypt(user.Password, Storage.Key));
-            isError = false;
             ClearPage();
             Navigation.NavigateTo("/");
+            Snackbar.Add("Пользователь успешно зарегистрирован!", Severity.Error);
         }
         else
         {
-            errorMessage = "Не все поля заполнены!";
-            isError = true;
+            Snackbar.Add("Не все поля заполнены!", Severity.Error);
         }
     }
 

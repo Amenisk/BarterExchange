@@ -1,6 +1,7 @@
 ﻿@inject ExchangeOrderService ExchangeOrderService
 @inject NavigationManager Navigation
 @inject UserService UserService
+@inject ISnackbar Snackbar
 
 <MudTable Items="@Offers" Hover="true" LoadingProgressColor="Color.Info" Style="width: 60%; margin: 0 20% 0 20%">
     <HeaderContent>
@@ -156,11 +157,13 @@
     {
         ExchangeOrderService.AcceptExchangeOffer(offer);
         Navigation.NavigateTo("/main");
+        Snackbar.Add("Предложение обмена успешно принято!", Severity.Success);
     }
 
     public void RejectOffer(ExchangeOrderOffer offer)
     {
         ExchangeOrderService.RejectExchangeOffer(offer.ExchangeOfferId);
         Navigation.NavigateTo("/main");
+        Snackbar.Add("Предложение обмена успешно отклонено!", Severity.Success);
     }
 }

@@ -1,7 +1,8 @@
 ﻿@page "/main-offer"
+
 @inject NavigationManager Navigation
 @inject ExchangeOrderService ExchangeOrderService
-
+@inject ISnackbar Snackbar
 
 <div class="block-1">
     <div style="width: 100%;">
@@ -55,18 +56,8 @@
     </div>
 </div>
 
-@if (isError)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
-
-
 
 @code {
-    bool isError;
-    string errorMessage = "";
 
     private void OpenOrderPage(int id)
     {
@@ -75,11 +66,9 @@
 
     private void SenderOfferExchange()
     {
-        isError = false;
         if(ExchangeOrderService.ValueItemType != 0 && ExchangeOrderService.SenderOrders.Count() != 0)
         {
-            isError = true;
-            errorMessage = "Предметы для создания рекомендованного обмена уже добавлены";
+            Snackbar.Add("Предметы для создания рекомендованного обмена уже добавлены!", Severity.Warning);
             return;
         }
         Navigation.NavigateTo("/offer-exchange-orders");
@@ -88,11 +77,9 @@
 
     private void RecepientOfferExchange()
     {
-        isError = false;
         if (ExchangeOrderService.ValueItemType != 0 && ExchangeOrderService.RecepientOrders.Count() != 0)
         {
-            isError = true;
-            errorMessage = "Предметы для создания рекомендованного обмена уже добавлены";
+            Snackbar.Add("Предметы для создания рекомендованного обмена уже добавлены!", Severity.Warning);
             return;
         }
         Navigation.NavigateTo("/offer-exchange-orders");
@@ -101,25 +88,21 @@
 
     private void SaveOfferExchange()
     {
-        isError = false;
-
         if (!ExchangeOrderService.CheckFullnessList())
         {
-            isError = true;
-            errorMessage = "Для создания обмена предметы должны предоставляться с двух сторон участников обмена!";
+            Snackbar.Add("Для создания обмена предметы должны предоставляться с двух сторон участников обмена!", Severity.Error);
             return;
         }
 
-
         if(ExchangeOrderService.CheckExchangeOrderOffer())
         {
-            isError = true;
-            errorMessage = "Такой обмен уже создан!";
+            Snackbar.Add("Такой обмен уже создан!", Severity.Warning);
             return;
         }
 
         ExchangeOrderService.SaveExchageOrderOffer();
         ExchangeOrderService.ClearLists();
         Navigation.NavigateTo("/main");
+        Snackbar.Add("Предложение обмена успешно создано!", Severity.Success);
     }
 }

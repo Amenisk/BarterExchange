@@ -1,4 +1,5 @@
 ﻿@page "/offer-exchange-orders"
+
 @inject ExchangeOrderService ExchangeOrderService
 @inject UserService UserService
 
@@ -16,9 +17,4 @@
 else
 {
     <OrderListComponent RecomendedOrders="ExchangeOrderService.GetRelevantExchnageOrders(UserService.CurrentUser.Email, ExchangeOrderService.ValueItemType)" IsOfferOrders="true"></OrderListComponent>
-}
-
-
-@code {
-
 }

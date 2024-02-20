@@ -1,5 +1,7 @@
 ﻿@page "/create-item-type"
+
 @inject ItemService ItemService
+@inject ISnackbar Snackbar
 
 <div class="card" style="width: 40%; margin: 100px 30% 0 30%">
     <div class="card-header">
@@ -29,13 +31,6 @@
     </div>
 </div>
 
-@if (isError && numberAlert == 1)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
-
 <div class="card" style="width: 40%; margin: 100px 30% 0 30%">
     <div class="card-header">
         <h3 style="display: flex; justify-content:center; align-content: center">Изменение ценности типа предмета</h3>
@@ -55,7 +50,7 @@
         <div class="form-group">
             <div class="card-body">
                 <MudSelect @bind-Value="selectedTitleItemType1" T="string" Label="Тип предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
-                           Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                           Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" HelperText="" SelectedValuesChanged="GetHelperText">
                     @foreach (var s in titlesItemTypes1)
                     {
                         <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
@@ -71,13 +66,6 @@
         </div>
     </div>
 </div>
-
-@if (isError && numberAlert == 2)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
 
 <div class="card" style="width: 40%; margin: 100px 30% 0 30%">
     <div class="card-header">
@@ -112,13 +100,6 @@
     </div>
 </div>
 
-@if (isError && numberAlert == 3)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
-
 @code {
     string selectedTitleItemCategory1 = "";
     string selectedTitleItemCategory2 = "";
@@ -131,14 +112,25 @@
     List<string> allTitlesItemCategories = new List<string>();
     List<string> titlesItemTypes1 = new List<string>();
     List<string> titlesItemTypes2 = new List<string>();
-    bool isError;
-    string errorMessage = "";
-    int numberAlert;
+    string helperText = "";
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         allTitlesItemCategories = ItemService.GetTitlesItemCategories();
+    }
+
+    private void GetHelperText()
+    {
+        if (selectedTitleItemType1 != null)
+        {
+            var itemType = ItemService.GetItemTypeByTitle(selectedTitleItemType1);
+            helperText = "Ценность - " + itemType.Value.ToString();
+        }
+        else
+        {
+            helperText = "";
+        }
     }
 
     private void UpdateTypesList(int numberList)
@@ -160,29 +152,28 @@
     public void CreateType()
     {
         int value;
-        ResetAlert();
 
         if (selectedTitleItemCategory1 == "")
         {
-            CreateAlert(1, "Выберите категорию предмета, к которому будет относится тип!");
+            Snackbar.Add("Выберите категорию предмета, к которому будет относится тип!", Severity.Error);
             return;
         }
 
         if (titleItemType == "" || valueType1 == "")
         {
-            CreateAlert(1, "Не все поля заполнены!");
+            Snackbar.Add("Не все поля заполнены!", Severity.Error);
             return;
         }
 
         if (!int.TryParse(valueType1, out value) || !(value == Math.Truncate((double)value)))
         {
-            CreateAlert(1, "Ценность типа предмета должна быть натуральным числом!");
+            Snackbar.Add("Ценность типа предмета должна быть натуральным числом!", Severity.Error);
             return;
         }
 
         if (ItemService.CheckItemType(titleItemType))
         {
-            CreateAlert(1, "Тип предмета с таким названием уже существует!");
+            Snackbar.Add("Тип предмета с таким названием уже существует!", Severity.Error);
             return;
         }
 
@@ -191,28 +182,28 @@
         selectedTitleItemCategory1 = "";
         titleItemType = "";
         valueType1 = "";
+        Snackbar.Add("Тип предмета успешно добавлен!", Severity.Success);
     }
 
     public void EditType()
     {
         int value;
-        ResetAlert();
 
         if (selectedTitleItemCategory2 == "" || selectedTitleItemType1 == "")
         {
-            CreateAlert(2, "Выберите категорию и тип предмета!");
+            Snackbar.Add("Выберите категорию и тип предмета!", Severity.Error);
             return;
         }
 
         if (valueType2 == "")
         {
-            CreateAlert(2, "Заполните поле ценности!");
+            Snackbar.Add("Заполните поле ценности!", Severity.Error);
             return;
         }
 
         if (!int.TryParse(valueType2, out value) || !(value == Math.Truncate((double)value)))
         {
-            CreateAlert(2, "Ценность типа предмета должна быть натуральным числом!");
+            Snackbar.Add("Ценность типа предмета должна быть натуральным числом!", Severity.Error);
             return;
         }
 
@@ -221,15 +212,14 @@
         selectedTitleItemType1 = "";
         titlesItemTypes1.Clear();
         valueType2 = "";
+        Snackbar.Add("Ценность типа предмета успешно изменена!", Severity.Success);
     }
 
     public void DeleteType()
     {
-        ResetAlert();
-
         if (selectedTitleItemCategory3 == "" || selectedTitleItemType2 == "")
         {
-            CreateAlert(3, "Выберите категорию и тип предмета!");
+            Snackbar.Add("Выберите категорию и тип предмета!", Severity.Error);
             return;
         }
 
@@ -237,27 +227,13 @@
         if(ItemService.CheckItemTypeAvailabilityOfOrder
             (ItemService.GetItemTypeByTitle(selectedTitleItemType2).ItemTypeId))
         {
-            CreateAlert(3, "Нельзя удалить тип предмета, так как с этим типом уже созданы объявления обмена!");
+            Snackbar.Add("Нельзя удалить тип предмета, так как с этим типом уже созданы объявления обмена!", Severity.Error);
             return;
         }
         ItemService.DeleteItemType(selectedTitleItemType2);
         selectedTitleItemCategory3 = "";
         selectedTitleItemType2 = "";
         titlesItemTypes2.Clear();
+        Snackbar.Add("Тип предмета успешно удален!", Severity.Success);
     }
-
-    public void CreateAlert(int numAlert, string message)
-    {
-        isError = true;
-        numberAlert = numAlert;
-        errorMessage = message;
-    }
-
-    public void ResetAlert()
-    {
-        isError = false;
-        numberAlert = 0;
-    }
-
-
 }
