@@ -22,7 +22,7 @@
 @if(RecomendedOrders == null)
 {
     <div class="card-group" style="width: 100%; margin: 10px 0 0 0">
-        @foreach (var exch in AllExchangeOrders)
+        @foreach (var exch in AllExchangeOrders.Skip((_selected - 1) * 16).Take(16).ToList())
         {
             <MudCard Outlined="true" style="width: 280; margin: 2%">
                 <MudCardContent Class="d-flex justify-center align-center">
@@ -66,6 +66,19 @@ else
         }
     </div>
 }
+@if(RecomendedOrders == null)
+{
+    <div class="d-flex flex-column align-center" style="margin: 3%">
+        <MudPagination BoundaryCount="2" MiddleCount="5" Count="@(AllExchangeOrders.Count() / 16 + GetNumber(AllExchangeOrders.Count()))" @bind-Selected="@_selected" Class="mt-4" />
+    </div>
+}
+else
+{
+    <div class="d-flex flex-column align-center" style="margin: 3%">
+        <MudPagination BoundaryCount="2" MiddleCount="5" Count="@(RecomendedOrders.Count() / 16 + GetNumber(RecomendedOrders.Count()))" @bind-Selected="@_selected" Class="mt-4" />
+    </div>
+}
+
 
 
 @code {
@@ -82,6 +95,8 @@ else
     string searchText = "";
     bool isRecomendedOrders;
     public List<ExchangeOrder> removedOrders = new List<ExchangeOrder>();
+    int _selected = 1;
+    int countPages = 0;
 
     protected override void OnInitialized()
     {
@@ -125,7 +140,19 @@ else
                     AllExchangeOrders.Remove(r);
                 }
             }         
-        }    
+        }
+    }
+
+    public int GetNumber(int num)
+    {
+        if(num % 16 == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
     }
 
     private void OpenOrderPage(int id)

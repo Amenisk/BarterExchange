@@ -33,7 +33,6 @@
                                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.GetExchangeOrder(s).Title</MudButton>
                             </MudCardActions>
                         }
-
                     }
                 }
                 else
@@ -55,7 +54,6 @@
                                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</MudButton>
                             </MudCardActions>
                         }
-
                     }
                 }
 
@@ -85,7 +83,6 @@
                                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</MudButton>
                             </MudCardActions>
                         }
-
                     }
                 }
                 else
@@ -107,12 +104,14 @@
                                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</MudButton>
                             </MudCardActions>
                         }
-
                     }
                 }
             </MudCard>
         </MudTd>
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
 </MudTable>
 
 
