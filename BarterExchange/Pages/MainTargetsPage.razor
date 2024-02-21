@@ -4,6 +4,7 @@
 @inject UserService UserService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 @if (UserService.IsAuthorized())
 {
@@ -141,13 +142,21 @@ else
         Targets = ExchangeOrderService.GetAllTargetsByUserEmail(UserService.CurrentUser.Email);
     }
 
-    public void DeleteTarget()
+    async Task DeleteTarget()
     {
         if (selectedTarget != null)
         {
-            ExchangeOrderService.DeleteTarget(selectedTarget.TargetId);
-            ReloadTargetsList();
-            Snackbar.Add("Цель успешно удалена!", Severity.Success);
+            var options = new DialogOptions { CloseOnEscapeKey = true };
+            var dialog = DialogService.Show<DeleteAccesDialog>("Удаление цели", options);
+            var result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                ExchangeOrderService.DeleteTarget(selectedTarget.TargetId);
+                ReloadTargetsList();
+                Snackbar.Add("Цель успешно удалена!", Severity.Success);
+            }
+         
             selectedTarget = null;
         }
         else

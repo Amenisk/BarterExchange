@@ -1,0 +1,16 @@
+﻿<MudDialog Style="width: 400px">
+    <DialogContent>
+        Подтверждение удаления
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Style="margin: 3%">Отменить удаление</MudButton>
+        <MudButton Color="Color.Primary" Style="margin: 3%" OnClick="Submit">Удалить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}
