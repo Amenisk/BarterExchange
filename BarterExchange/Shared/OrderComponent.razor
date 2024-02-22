@@ -1,24 +1,108 @@
 ﻿@inject ExchangeOrderService ExchangeOrderService
 @inject ItemService ItemService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject UserService UserService
+@inject ISnackbar Snackbar
 
-<MudText Style="font-size: 64px">@order.Title</MudText>
-<MudImage Src=@("Images/" + order.PhotoName) Elevation="25" Class="rounded-lg" Width="800" />
-<MudText Style="font-size: 28px; margin: 0 5% 0 0">Категория предмета: @ItemService.GetItemCategoryByItemTypeId(order.ItemTypeId).Title</MudText>
-<MudText Style="font-size: 28px; margin: 0 5% 3% 0">Тип предмета: @ItemService.GetItemTypeById(order.ItemTypeId).Title</MudText>
-<MudText Style="font-size: 36px">Описание предмета</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.Description" Lines="5" Style="width:70%; margin: 0 0 3% 0" />
-<MudText Style="font-size: 36px">Цель обмена</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.ExchangeDescription" Lines="5" Style="width:70%; margin: 0 0 3% 0" />
-<MudText Style="font-size: 36px">Контактная информация</MudText>
-<MudTextField T="string" Variant="Variant.Outlined" ReadOnly Text="@order.ContactInformation" Lines="5" Style="width:70%; margin: 0 0 10% 0" />
+<MudGrid>
+    <MudItem md="12" sm="12">
+        <MudText Typo="Typo.h3">@order.Title</MudText>
+    </MudItem>
+    <MudItem lg="4" md="6" sm="12">
+        <MudImage Src=@("Images/" + order.PhotoName) Elevation="25" Class="rounded-lg" Width="600" Alt="@order.Title" />
+    </MudItem>
+    <MudItem Style="margin:auto" lg="5" md="6" sm="12">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6">
+                <strong>Категория предмета:</strong> @ItemService.GetItemCategoryByItemTypeId(order.ItemTypeId).Title
+            </MudText>
+            <MudText Typo="Typo.h6">
+                <strong>Тип предмета:</strong> @ItemService.GetItemTypeById(order.ItemTypeId).Title
+            </MudText>
+            <MudExpansionPanel HideIcon="true">
+                <TitleContent>
+                    <MudText Class="mt-1"><strong>Описание</strong></MudText>
+                </TitleContent>
+                <ChildContent>
+                    <MudTextField T="string" Variant="Variant.Filled" ReadOnly Text="@order.Description" Lines="5" />
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel HideIcon="true">
+                <TitleContent>
+                    <MudText Class="mt-1"><strong>Цель обмена</strong></MudText>
+                </TitleContent>
+                <ChildContent>
+                    <MudTextField T="string" Variant="Variant.Filled" ReadOnly Text="@order.ExchangeDescription" Lines="5" />
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel HideIcon="true">
+                <TitleContent>
+                    <MudText Class="mt-1"><strong>Контактная информация</strong></MudText>
+                </TitleContent>
+                <ChildContent>
+                    <MudTextField T="string" Variant="Variant.Filled" ReadOnly Text="@order.ContactInformation" Lines="5" />
+                </ChildContent>
+            </MudExpansionPanel>
+
+            @if(IsCreated)
+            {
+                <div class="form-group" style="display: flex; justify-content:center">
+                    <MudButton Variant="Variant.Outlined" Style="margin: 20px" Color="Color.Primary" @onclick=EditOrder>Редактировать объявление</MudButton>
+                    <MudButton Variant="Variant.Outlined" Style="margin: 20px" Color="Color.Primary" @onclick=DeleteOrder>Удалить объявление</MudButton>
+                </div>
+            }   
+
+            @if (UserService.CurrentUser != null &&
+                ExchangeOrderService.CurrentExchangeOrder.CreatorEmail != UserService.CurrentUser.Email
+                && UserService.CurrentUser.Role != "Admin"
+                && !ExchangeOrderService.CheckAvailabilityOrderInLists())
+            {
+                <div class="form-group" style="display: flex; justify-content:center">
+                    <MudButton Variant="Variant.Outlined" Style="margin: 20px" Color="Color.Primary" @onclick=OfferExchange>Предложить обмен</MudButton>
+                </div>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
 
 
 @code {
     ExchangeOrder order;
+    [Parameter]
+    public bool IsCreated { get; set; }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         order = ExchangeOrderService.CurrentExchangeOrder;
-    }                                                        
+    }   
+    
+    private void EditOrder()
+    {
+        Navigation.NavigateTo("/edit-order");
+    }
+
+    private async Task DeleteOrder()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<DeleteAccesDialog>("Удаление объявления об обмене", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            ExchangeOrderService.DeleteExchangeOrder(ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId);
+            Navigation.NavigateTo("/created-orders");
+            Snackbar.Add("Объявление об обмене успешно удалено!", Severity.Success);
+        }
+    }
+
+    private void OfferExchange()
+    {
+        Navigation.NavigateTo("/main-offer");
+        ExchangeOrderService.ReloadLists(ExchangeOrderService.CurrentExchangeOrder);
+    }
 }

@@ -6,30 +6,4 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
-<OrderComponent></OrderComponent>
-
-<div class="form-group" style="display: flex; justify-content:center">
-    <button class="btn btn-primary" style="margin: 3%" @onclick=EditOrder>Редактировать объявление</button>
-    <button class="btn btn-primary" style="margin: 3%" @onclick=DeleteOrder>Удалить объявление</button>
-</div>
-
-@code {
-    public void EditOrder()
-    {
-        Navigation.NavigateTo("/edit-order");
-    }
-
-    public async Task DeleteOrder()
-    {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = DialogService.Show<DeleteAccesDialog>("Удаление объявления об обмене", options);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            ExchangeOrderService.DeleteExchangeOrder(ExchangeOrderService.CurrentExchangeOrder.ExchangeOrderId);
-            Navigation.NavigateTo("/created-orders");
-            Snackbar.Add("Объявление об обмене успешно удалено!", Severity.Success);
-        }     
-    }
-}
+<OrderComponent IsCreated="true"></OrderComponent>
