@@ -124,7 +124,14 @@ namespace BarterExchange.Data.Classes
                 else
                 {
                     AvailableOrdersIdList.Add(StartOrder.ExchangeOrderId);
-                }            
+                }
+
+                return;
+            }
+
+            foreach (var id in offer.SenderExchangeOrdersId)
+            {
+                AvailableOrdersIdList.Add(id);
             }
         }
 
