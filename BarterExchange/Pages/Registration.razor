@@ -10,7 +10,7 @@
 
 @if (!UserService.IsAuthorized())
 {
-    <div class="card" style="width: 50%; margin: 100px 25% 0 25%">
+    <div class="card" style="width: 50%; margin: 130px 25% 0 25%">
         <div class="card-header">
             <h3 style="display: flex; justify-content:center">Регистрация</h3>
         </div>
@@ -92,7 +92,7 @@ else
                 UserService.EncodeDecrypt(user.Password, Storage.Key));
             ClearPage();
             Navigation.NavigateTo("/");
-            Snackbar.Add("Пользователь успешно зарегистрирован!", Severity.Error);
+            Snackbar.Add("Пользователь успешно зарегистрирован!", Severity.Success);
         }
         else
         {
