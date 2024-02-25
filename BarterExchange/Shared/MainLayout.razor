@@ -9,10 +9,10 @@
 <PageTitle>BarterExchange</PageTitle>
 
 <div class="page">
-    <div class="sidebar bg-primary">
+    <div class="sidebar bg-primary" style="width: 270px">
         <NavMenu />
     </div>
-
+    
     <main>
         <div class="top-row px-4 bg-primary">
             @if(UserService.IsAuthorized())
@@ -32,6 +32,13 @@
 </div>
 
 @code {
+    bool open = false;
+
+    private void ToggleDrawer()
+    {
+        open = !open;
+    }
+
     private void OnButtonClick()
     {
         Navigation.NavigateTo("/authorization");

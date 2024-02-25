@@ -89,17 +89,17 @@ else
         Navigation.NavigateTo("/order");
     }
 
-    public void NavigateToAuthorization()
+    private void NavigateToAuthorization()
     {
         Navigation.NavigateTo("/authorization");
     }
 
-    public void OpenCreateTargetPage()
+    private void OpenCreateTargetPage()
     {
         Navigation.NavigateTo("/create-target");
     }
 
-    public void ChangeTargetItem()
+    private void ChangeTargetItem()
     {
         if(changeText == "Изменить целевой предмет")
         {
@@ -138,7 +138,7 @@ else
         Targets = ExchangeOrderService.GetAllTargetsByUserEmail(UserService.CurrentUser.Email);
     }
 
-    async Task DeleteTarget()
+    private async Task DeleteTarget()
     {
         if (selectedTarget != null)
         {
@@ -161,7 +161,7 @@ else
         }      
     }
 
-    public void FinalTarget()
+    private void FinalTarget()
     {
         if (selectedTarget != null)
         {
@@ -184,7 +184,7 @@ else
         }
     }
 
-    public void NavigateToTargetPage(Target target)
+    private void NavigateToTargetPage(Target target)
     {
         ExchangeOrderService.CurrentTarget = target;
         Navigation.NavigateTo("/target");

@@ -143,13 +143,13 @@ else
         }
     }
 
-    public void OpenOrderPage(int id)
+    private void OpenOrderPage(int id)
     {
             ExchangeOrderService.ChangeCurrentExchangeOrder(id);
             Navigation.NavigateTo("/order");
     }
 
-    public void SelectOffer()
+    private void SelectOffer()
     {
         if (ExchangeOrderService.CurrentTarget != null)
         {

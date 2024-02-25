@@ -109,13 +109,13 @@ else
             (ItemService.GetItemCategoryByTitle(titleItemCategory).ItemCategoryId);
     }
 
-    private void UploadFiles(IBrowserFile file)
+    private async Task UploadFiles(IBrowserFile file)
     {
         photo = file;
         Snackbar.Add("Фотография предмета успешно загружена!", Severity.Success);
     }
 
-    public async Task CreateOrEditOrder()
+    private async Task CreateOrEditOrder()
     {
         if (title != "" && description != "" && exchangeDescription != "" && titleItemCategory != "" && titleItemType != "" && contactInformation != "")
         {

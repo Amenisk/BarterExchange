@@ -129,7 +129,7 @@ else
         Snackbar.Add("Предложение обмена успешно создано!", Severity.Success);
     }
 
-    public void RemoveOrder(ExchangeOrder order)
+    private void RemoveOrder(ExchangeOrder order)
     {
         if(order.ExchangeOrderId == ExchangeOrderService.RecepientOrders.First().ExchangeOrderId)
         {

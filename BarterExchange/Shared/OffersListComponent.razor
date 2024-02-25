@@ -150,20 +150,20 @@
     public List<ExchangeOrderOffer> Offers { get; set; }
 
 
-    public void OpenOrderPage(int id)
+    private void OpenOrderPage(int id)
     {
         ExchangeOrderService.ChangeCurrentExchangeOrder(id);
         Navigation.NavigateTo("/order-information");
     }
 
-    public void AcceptOffer(ExchangeOrderOffer offer)
+    private void AcceptOffer(ExchangeOrderOffer offer)
     {
         ExchangeOrderService.AcceptExchangeOffer(offer);
         Navigation.NavigateTo("/main");
         Snackbar.Add("Предложение обмена успешно принято!", Severity.Success);
     }
 
-    public void RejectOffer(ExchangeOrderOffer offer)
+    private void RejectOffer(ExchangeOrderOffer offer)
     {
         ExchangeOrderService.RejectExchangeOffer(offer.ExchangeOfferId);
         Navigation.NavigateTo("/main");

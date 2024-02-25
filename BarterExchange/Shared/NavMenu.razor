@@ -1,7 +1,7 @@
 ﻿@inject UserService UserService
 @inject ExchangeOrderService ExchangeOrderService
 
-<div class="top-row ps-3 navbar navbar-dark bg-primary">
+<div class="top-row ps-3 navbar navbar-dark bg-primary" style="width: 250px">
     <div class="container-fluid">
         <div style="float: left">
             <MudImage Src="logo.png" Width="30" ></MudImage>
@@ -20,7 +20,7 @@
     <MudPaper Width="250px" Class="py-3 bg-primary" Elevation="0" Height="100%">
         <MudNavMenu Dense="true" Color="Color.Info">
             <MudNavLink Href="/make-order" style="color: white" Icon="@Icons.Material.Filled.Add" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Создать обмен</MudNavLink>
-            <MudNavGroup Title="Обмены" Expanded="true" Style="color: white" Icon="@Icons.Material.Filled.Description" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">
+            <MudNavGroup Title="Обмены" Expanded="false" Style="color: white" Icon="@Icons.Material.Filled.Description" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">
                 <MudNavLink Href="/created-orders" Style="color: white" Icon="@Icons.Material.Filled.Create" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Созданные объявления</MudNavLink>
                 <MudNavLink Href="/conducted-offers" Style="color: white" Icon="@Icons.Material.Filled.CheckBox" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Проведенные обмены</MudNavLink>
                 <MudNavLink Href="/created-offers" Style="color: white" Icon="@Icons.Material.Filled.CallMade" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Созданные предложения</MudNavLink>
