@@ -3,6 +3,15 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject UserService UserService
 
-<OffersListComponent IsRecieved="false" Offers="ExchangeOrderService.GetCreatedExchangeOrderOffers(UserService.CurrentUser.Email)"></OffersListComponent>
+@if (UserService.IsAuthorized())
+{
+    <OffersListComponent IsRecieved="false" Offers="ExchangeOrderService.GetCreatedExchangeOrderOffers(UserService.CurrentUser.Email)"></OffersListComponent>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
+
+
 
 

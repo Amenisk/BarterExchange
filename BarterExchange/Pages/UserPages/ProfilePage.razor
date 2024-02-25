@@ -60,6 +60,10 @@
         </div>
     </MudCard>
 }
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
 
 
 @code {
@@ -77,6 +81,10 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        if (!UserService.IsAuthorized())
+        {
+            return;
+        }
         name = UserService.CurrentUser.Name;
         surname = UserService.CurrentUser.Surname;
         email = UserService.EncodeDecrypt(UserService.CurrentUser.Email, Storage.Key);

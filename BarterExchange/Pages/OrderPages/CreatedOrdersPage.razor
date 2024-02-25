@@ -3,5 +3,13 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject UserService UserService
 
-<OrderListComponent AllExchangeOrders="@ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsCreatedOrders="true"></OrderListComponent>
+@if (UserService.IsAuthorized())
+{
+    <OrderListComponent AllExchangeOrders="@ExchangeOrderService.GetCreatedExchangeOrders(UserService.CurrentUser.Email)" IsCreatedOrders="true"></OrderListComponent>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
+
 

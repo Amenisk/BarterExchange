@@ -2,47 +2,55 @@
 
 @inject ItemService ItemService
 @inject ISnackbar Snackbar
+@inject UserService UserService
 
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    <MudTabPanel Text="Создание категории">
-        <div class="card" style="width: 40%; margin: 30px 30% 0 30%">
-            <div class="card-header">
-                <h3 style="display: flex; justify-content:center; align-content: center">Создание категории предмета обмена</h3>
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <MudTextField @bind-Value="titleItemCategory" Label="Название категории" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+@if (UserService.IsAuthorized())
+{
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Создание категории">
+            <div class="card" style="width: 40%; margin: 30px 30% 0 30%">
+                <div class="card-header">
+                    <h3 style="display: flex; justify-content:center; align-content: center">Создание категории предмета обмена</h3>
                 </div>
-                <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
-                    <button class="btn btn-primary" @onclick=CreateCategory>Создать категорию</button>
-                </div>
-            </div>
-        </div>
-    </MudTabPanel>
-    <MudTabPanel Text="Удаление категории">
-        <div class="card" style="width: 40%; margin: 30px 30% 0 30%">
-            <div class="card-header">
-                <h3 style="display: flex; justify-content:center; align-content: center">Удаление категории предмета обмена</h3>
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <div class="card-body">
-                        <MudSelect @bind-Value="titleDeletedItemCategory" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
-                                   Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
-                            @foreach (var s in allTitlesItemCategories)
-                            {
-                                <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
-                            }
-                        </MudSelect>
+                <div class="card-body">
+                    <div class="form-group">
+                        <MudTextField @bind-Value="titleItemCategory" Label="Название категории" Clearable="true" Immediate="true" Variant="Variant.Filled"></MudTextField>
+                    </div>
+                    <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
+                        <button class="btn btn-primary" @onclick=CreateCategory>Создать категорию</button>
                     </div>
                 </div>
-                <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
-                    <button class="btn btn-primary" @onclick=DeleteCategory>Удалить категорию</button>
+            </div>
+        </MudTabPanel>
+        <MudTabPanel Text="Удаление категории">
+            <div class="card" style="width: 40%; margin: 30px 30% 0 30%">
+                <div class="card-header">
+                    <h3 style="display: flex; justify-content:center; align-content: center">Удаление категории предмета обмена</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="card-body">
+                            <MudSelect @bind-Value="titleDeletedItemCategory" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                                   Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
+                                @foreach (var s in allTitlesItemCategories)
+                                {
+                                    <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </div>
+                    </div>
+                    <div class="form-group" style="display: flex; justify-content:center; margin: 3%">
+                        <button class="btn btn-primary" @onclick=DeleteCategory>Удалить категорию</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </MudTabPanel>
-</MudTabs>
+        </MudTabPanel>
+    </MudTabs>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
 
 @code {
     string titleItemCategory = "";

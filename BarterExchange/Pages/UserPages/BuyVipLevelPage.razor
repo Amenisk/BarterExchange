@@ -4,49 +4,56 @@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
-<div class="card" style="width: 30%; margin: 100px 25% 0 25%">
-    <div class="card-header">
-        <h4 style="display: flex; justify-content:center">Покупка подписки приоритета</h4>
-    </div>
-    <div class="card-body">
-        <div class="form-group">
-            <MudSelect @bind-Value="levelString" T="string" Label="Уровень приоритета" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+@if (UserService.IsAuthorized())
+{
+    <div class="card" style="width: 30%; margin: 100px 25% 0 25%">
+        <div class="card-header">
+            <h4 style="display: flex; justify-content:center">Покупка подписки приоритета</h4>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <MudSelect @bind-Value="levelString" T="string" Label="Уровень приоритета" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
                        Variant="Variant.Filled" AdornmentColor="Color.Primary" SelectedValuesChanged="CalculateCost">
-                @foreach (var s in levelStrings)
-                {
-                    <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
-                }
-            </MudSelect>
-        </div>
-        <div class="form-group">
-            <MudSelect @bind-Value="period" T="string" Label="Период подписки" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                    @foreach (var s in levelStrings)
+                    {
+                        <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="form-group">
+                <MudSelect @bind-Value="period" T="string" Label="Период подписки" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
                        Variant="Variant.Filled" AdornmentColor="Color.Primary" SelectedValuesChanged="CalculateCost">
-                @foreach (var s in periods)
+                    @foreach (var s in periods)
+                    {
+                        <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
+                @if (cost != null)
                 {
-                    <MudSelectItem T="string" Value="@s">@s</MudSelectItem>
+                    if (UserService.CurrentUser.VipLevel == 0)
+                    {
+                        <MudTooltip Text=@($"Дата окончания подписки после покупки: {DateTime.Now.AddDays(1 + countDays).ToShortDateString()}")>
+                            <MudTextField @bind-Value="cost" Label="Стоимость подписки" Style="width: 200px" Immediate="true" Variant="Variant.Text" ReadOnly=true></MudTextField>
+                        </MudTooltip>
+                    }
+                    else
+                    {
+                        <MudTooltip Text=@($"Дата окончания подписки после покупки: {UserService.CurrentUser.EndDateVipLevel.AddDays(1 + countDays).ToShortDateString()}")>
+                            <MudTextField @bind-Value="cost" Label="Стоимость подписки" Style="width: 200px" Immediate="true" Variant="Variant.Text" ReadOnly=true></MudTextField>
+                        </MudTooltip>
+                    }
                 }
-            </MudSelect>
-        </div>
-        <div class="form-group" style="display: flex; justify-content:center; margin: 3% 0 0 0">
-            @if (cost != null)
-            {
-                if (UserService.CurrentUser.VipLevel == 0)
-                {
-                    <MudTooltip Text=@($"Дата окончания подписки после покупки: {DateTime.Now.AddDays(1 + countDays).ToShortDateString()}")>
-                        <MudTextField @bind-Value="cost" Label="Стоимость подписки" Style="width: 200px" Immediate="true" Variant="Variant.Text" ReadOnly=true></MudTextField>
-                    </MudTooltip>
-                }
-                else
-                {
-                    <MudTooltip Text=@($"Дата окончания подписки после покупки: {UserService.CurrentUser.EndDateVipLevel.AddDays(1 + countDays).ToShortDateString()}")>
-                        <MudTextField @bind-Value="cost" Label="Стоимость подписки" Style="width: 200px" Immediate="true" Variant="Variant.Text" ReadOnly=true></MudTextField>
-                    </MudTooltip>
-                }             
-            }           
-            <button class="btn btn-primary" @onclick=Buy style="margin: 10px">Купить</button>
+                <button class="btn btn-primary" @onclick=Buy style="margin: 10px">Купить</button>
+            </div>
         </div>
     </div>
-</div>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
 
 @code {
     List<String> levelStrings = new List<String>();

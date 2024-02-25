@@ -9,19 +9,19 @@
 <PageTitle>BarterExchange</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
+    <div class="sidebar bg-primary">
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-4 bg-primary">
             @if(UserService.IsAuthorized())
             {
-                <NavLink href="profile">@UserService.EncodeDecrypt(UserService.CurrentUser.Email, Storage.Key)</NavLink>
+                <NavLink href="profile" style="color: white">@UserService.EncodeDecrypt(UserService.CurrentUser.Email, Storage.Key)</NavLink>
             }
             else
             {
-                <NavLink href="authorization">Авторизация</NavLink>
+                <NavLink href="authorization" style="color: white">Авторизация</NavLink>
             }
         </div>
 

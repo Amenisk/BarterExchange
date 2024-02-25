@@ -3,75 +3,82 @@
 @inject NavigationManager Navigation
 @inject ExchangeOrderService ExchangeOrderService
 @inject ISnackbar Snackbar
+@inject UserService UserService
 
-<div class="block-1">
-    <div style="width: 100%;">
-        <div style="width: 50%; float: left">
-            <div class="header">
-                <h3 style="display: flex; justify-content:center">Ваши предметы: </h3>
+@if (UserService.IsAuthorized())
+{
+    <div class="block-1">
+        <div style="width: 100%;">
+            <div style="width: 50%; float: left">
+                <div class="header">
+                    <h3 style="display: flex; justify-content:center">Ваши предметы: </h3>
+                </div>
+                <div class="card-group">
+                    @foreach (var exch in ExchangeOrderService.SenderOrders)
+                    {
+                        <MudCard Outlined="true" style="width: 280; margin: 2%">
+                            <MudCardHeader Style="height: 20px">
+                                <CardHeaderAvatar>
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" OnClick="() => RemoveOrder(exch)" />
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                            </MudCardContent>
+                            <MudCardActions style="display: flex; justify-content:center">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@ExchangeOrderService.CutName(exch.Title)</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                </div>
+                <div class="form-group" style="display: flex; justify-content:center; margin: 0 0 5% 0">
+                    <button class="btn btn-primary" @onclick=SenderOfferExchange>Добавить предмет для обмена</button>
+                </div>
             </div>
-            <div class="card-group">
-                @foreach (var exch in ExchangeOrderService.SenderOrders)
-                {
-                    <MudCard Outlined="true" style="width: 280; margin: 2%">
-                        <MudCardHeader Style="height: 20px">
-                            <CardHeaderAvatar>
-                            </CardHeaderAvatar>
-                            <CardHeaderContent>
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" OnClick="() => RemoveOrder(exch)" />
-                            </CardHeaderActions>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                        </MudCardContent>
-                        <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@ExchangeOrderService.CutName(exch.Title)</MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                }
-            </div>
-            <div class="form-group" style="display: flex; justify-content:center; margin: 0 0 5% 0">
-                <button class="btn btn-primary" @onclick=SenderOfferExchange>Добавить предмет для обмена</button>
-            </div>
-        </div>
-        <div style="width: 50%; float: left">
-            <div class="header">
-                <h3 style="display: flex; justify-content:center">Предметы на обмен: </h3>
-            </div>
-            <div class="card-group">
-                @foreach (var exch in ExchangeOrderService.RecepientOrders)
-                {
-                    <MudCard Outlined="true" style="width: 280; margin: 2%">
-                        <MudCardHeader Style="height: 20px">
-                            <CardHeaderAvatar>
-                            </CardHeaderAvatar>
-                            <CardHeaderContent>
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" OnClick="() => RemoveOrder(exch)" />
-                            </CardHeaderActions>
-                        </MudCardHeader>
-                        <MudCardContent >
-                            <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                        </MudCardContent>
-                        <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@ExchangeOrderService.CutName(exch.Title)</MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                }
-            </div>
-            <div class="form-group" style="display: flex; justify-content:center; margin: 0 0 5% 0">
-                <button class="btn btn-primary" @onclick=RecepientOfferExchange>Добавить предмет для обмена</button>
+            <div style="width: 50%; float: left">
+                <div class="header">
+                    <h3 style="display: flex; justify-content:center">Предметы на обмен: </h3>
+                </div>
+                <div class="card-group">
+                    @foreach (var exch in ExchangeOrderService.RecepientOrders)
+                    {
+                        <MudCard Outlined="true" style="width: 280; margin: 2%">
+                            <MudCardHeader Style="height: 20px">
+                                <CardHeaderAvatar>
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" OnClick="() => RemoveOrder(exch)" />
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
+                            </MudCardContent>
+                            <MudCardActions style="display: flex; justify-content:center">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(exch.ExchangeOrderId)">@ExchangeOrderService.CutName(exch.Title)</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                </div>
+                <div class="form-group" style="display: flex; justify-content:center; margin: 0 0 5% 0">
+                    <button class="btn btn-primary" @onclick=RecepientOfferExchange>Добавить предмет для обмена</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div style="width: 100%; display: flex; justify-content:center; margin: 0 0 5% 0">
-    <button class="btn btn-primary" @onclick=SaveOfferExchange style="display: block; margin-left: auto; margin-right: auto">Предложить обмен</button>
-</div>
-
+    <div style="width: 100%; display: flex; justify-content:center; margin: 0 0 5% 0">
+        <button class="btn btn-primary" @onclick=SaveOfferExchange style="display: block; margin-left: auto; margin-right: auto">Предложить обмен</button>
+    </div>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
 
 @code {
 

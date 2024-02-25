@@ -1,9 +1,14 @@
 ﻿@inject UserService UserService
 @inject ExchangeOrderService ExchangeOrderService
 
-<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row ps-3 navbar navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="main" @onclick="ClearExchangeOrderService">Бартерный обмен</a>
+        <div style="float: left">
+            <MudImage Src="logo.png" Width="30" ></MudImage>
+        </div>
+        <div style="float: left">
+            <a class="navbar-brand" href="main" @onclick="ClearExchangeOrderService" style="float: left">Бартерный обмен</a>
+        </div>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -12,47 +17,27 @@
 
 @if(!UserService.IsAuthorized() || UserService.CurrentUser.Role == "User")
 {
-    <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-        <nav class="flex-column">
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="main" Match="NavLinkMatch.All" @onclick="ClearExchangeOrderService">
-                    <span class="oi oi-home" aria-hidden="true"></span> Главная страница
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="make-order" @onclick="ClearExchangeOrderService">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Создать обмен
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="order-menu" @onclick="ClearExchangeOrderService">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Обмены
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="main-targets" @onclick="ClearExchangeOrderService">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Цели
-                </NavLink>
-            </div>
-        </nav>
-    </div>
+    <MudPaper Width="250px" Class="py-3 bg-primary" Elevation="0" Height="100%">
+        <MudNavMenu Dense="true" Color="Color.Info">
+            <MudNavLink Href="/make-order" style="color: white" Icon="@Icons.Material.Filled.Add" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Создать обмен</MudNavLink>
+            <MudNavGroup Title="Обмены" Expanded="true" Style="color: white" Icon="@Icons.Material.Filled.Description" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">
+                <MudNavLink Href="/created-orders" Style="color: white" Icon="@Icons.Material.Filled.Create" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Созданные объявления</MudNavLink>
+                <MudNavLink Href="/conducted-offers" Style="color: white" Icon="@Icons.Material.Filled.CheckBox" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Проведенные обмены</MudNavLink>
+                <MudNavLink Href="/created-offers" Style="color: white" Icon="@Icons.Material.Filled.CallMade" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Созданные предложения</MudNavLink>
+                <MudNavLink Href="/recieved-offers" Style="color: white" Icon="@Icons.Material.Filled.CallReceived" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Полученные предложения</MudNavLink>
+            </MudNavGroup>
+            <MudNavLink Href="/main-targets" style="color: white" Icon="@Icons.Material.Filled.PlaylistAddCheck" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Цели</MudNavLink>
+        </MudNavMenu>
+    </MudPaper>
 }
 else
 {
-    <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-        <nav class="flex-column">
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="create-item-category" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> Создать категорию
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="create-item-type">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Создать тип
-                </NavLink>
-            </div>
-        </nav>
-    </div>
+    <MudPaper Width="250px" Class="py-3 bg-primary" Elevation="0" Height="100%">
+        <MudNavMenu Dense="true" Color="Color.Info">
+            <MudNavLink Href="/create-item-category" OnClick="ClearExchangeOrderService" style="color: white" Icon="@Icons.Material.Filled.ViewList" IconColor="Color.Inherit">Категории предметов</MudNavLink>
+            <MudNavLink Href="/create-item-type" OnClick="ClearExchangeOrderService" style="color: white" Icon="@Icons.Material.Filled.ListAlt" IconColor="Color.Inherit">Типы предметов</MudNavLink>
+        </MudNavMenu>
+    </MudPaper>
 }
 
 

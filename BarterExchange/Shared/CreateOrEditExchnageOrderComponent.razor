@@ -64,13 +64,8 @@
 }
 else
 {
-    <div class="modal-body">
-        <h5>Авторизируйтесь</h5>
-        <p>Чтобы создать объявление для обмена, нужно сначала авторизироваться</p>
-        <p><button class="btn btn-secondary popover-test" @onclick=NavigateToAuthorization>Авторизоваться</button></p>
-    </div>
+    <NotAuthorizedComponent></NotAuthorizedComponent>
 }
-
 
 @code {
     [Parameter]
@@ -90,6 +85,10 @@ else
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        if (!UserService.IsAuthorized())
+        {
+            return;
+        }
         allItemCategoriesTitles = ItemService.GetTitlesItemCategories();
         if (Order != null)
         {
@@ -114,11 +113,6 @@ else
     {
         photo = file;
         Snackbar.Add("Фотография предмета успешно загружена!", Severity.Success);
-    }
-
-    public void NavigateToAuthorization()
-    {
-        Navigation.NavigateTo("/authorization");
     }
 
     public async Task CreateOrEditOrder()

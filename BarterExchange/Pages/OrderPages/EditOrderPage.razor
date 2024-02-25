@@ -1,5 +1,13 @@
 ﻿@page "/edit-order"
 
 @inject ExchangeOrderService ExchangeOrderService
+@inject UserService UserService
 
-<CreateOrEditExchnageOrderComponent Order="ExchangeOrderService.CurrentExchangeOrder"></CreateOrEditExchnageOrderComponent>
+@if (UserService.IsAuthorized())
+{
+    <CreateOrEditExchnageOrderComponent Order="ExchangeOrderService.CurrentExchangeOrder"></CreateOrEditExchnageOrderComponent>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}

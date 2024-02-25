@@ -5,5 +5,15 @@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject UserService UserService
 
-<OrderComponent IsCreated="true"></OrderComponent>
+@if (UserService.IsAuthorized())
+{
+    <OrderComponent IsCreated="true"></OrderComponent>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
+
+

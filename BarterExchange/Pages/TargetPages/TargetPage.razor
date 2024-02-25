@@ -5,7 +5,9 @@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
-<MudTable Items="@target.TargetLevels" Hover="true" LoadingProgressColor="Color.Info" Style="width: 90%; margin: 0 5% 0 5%">
+@if (UserService.IsAuthorized())
+{
+    <MudTable Items="@target.TargetLevels" Hover="true" LoadingProgressColor="Color.Info" Style="width: 90%; margin: 0 5% 0 5%">
     <ToolBarContent>
         <div style="width: 100%">
             <MudText Typo="Typo.h3" Style="display: flex; justify-content:center">@target.StartOrder.Title → @target.TargetNameItem</MudText>
@@ -97,8 +99,11 @@
     </Tooltip>
     
 </div>
-
-
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
 
 @code {
     Target target { get; set; }
@@ -111,6 +116,10 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        if (!UserService.IsAuthorized())
+        {
+            return;
+        }
         target = ExchangeOrderService.CurrentTarget;
 
         if(ExchangeOrderService.SelectedOffer != null)
