@@ -239,12 +239,13 @@ else
 
     private void GetRecomendedOrders(bool check)
     {
+        var orders = ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email);
         if (check)
         {
-            if (ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email).Count != 0)
+            if (orders.Count != 0)
             {
                 isRecomendedOrders = true;
-                AllExchangeOrders = ExchangeOrderService.GetRecomendedOrders(UserService.CurrentUser.Email);
+                AllExchangeOrders = orders;
                 Snackbar.Add("Найдены рекомендованные объявления обмена!", Severity.Info);
             }
             else

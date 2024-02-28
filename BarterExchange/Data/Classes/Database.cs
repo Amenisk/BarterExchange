@@ -369,25 +369,52 @@ namespace BarterExchange.Data.Classes
             return listOrders;
         }
 
-        public static List<ExchangeOrder> GetRecomendedOrdersByUserEmail(string email)
+        private static List<OrderValue> GetOrderValues(string userEmail, bool forUser)
         {
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
-            var orders = collection.Find(x => x.CreatorEmail != email && x.IsDeleted == false).ToList();
-            var userOrders = collection.Find(x => x.CreatorEmail == email && x.IsDeleted == false).ToList();
-            var ordersList = new List<ExchangeOrder>(); 
+            var orders = new List<ExchangeOrder>();
+            var orderValues = new List<OrderValue>();
 
-            foreach(var order in orders)
+            if (forUser)
             {
-                var type = GetItemTypeById(order.ItemTypeId);
+                orders = collection.Find(x => x.CreatorEmail == userEmail && x.IsDeleted == false).ToList();
+            }
+            else
+            {
+                orders = collection.Find(x => x.CreatorEmail != userEmail && x.IsDeleted == false).ToList();
+            }       
 
-                    if (GetRelevantExchangeOrdersByRecommendation(email, type.Value).Count() != 0)
+            foreach (var o in orders)
+            {
+                var typeValue = GetItemTypeById(o.ItemTypeId);
+                orderValues.Add(new OrderValue(o.ExchangeOrderId, typeValue.Value));
+            }
+
+            return orderValues;
+        }
+
+        public static List<ExchangeOrder> GetRecomendedOrdersByUserEmail(string email)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");  
+            var orderValues = GetOrderValues(email, false); 
+            var orderValuesList = new List<OrderValue>(); 
+            var ordersList = new List<ExchangeOrder>();
+
+            foreach (var orderValue in orderValues)
+            {
+                    if (GetRelevantExchangeOrdersByRecommendation(email, orderValue.Value).Count() != 0)
                     {
-                        if(!ordersList.Contains(order))
+                        if(!orderValuesList.Contains(orderValue))
                         {
-                            ordersList.Add(order);
+                            orderValuesList.Add(orderValue);
                         }      
                         continue;
                     }
+            }
+
+            foreach (var ov in orderValuesList)
+            {
+                ordersList.Add(GetExchangeOrderById(ov.OrderId));
             }
 
             return ordersList;
@@ -406,9 +433,10 @@ namespace BarterExchange.Data.Classes
             var ordersList = new List<List<int>>();
             var ordersId = new List<int>();
             var readyOrders = new List<List<ExchangeOrder>>();
+            var userOrderValues = GetOrderValues(email, true);
             var orders = collection.Find(x => x.CreatorEmail == email && x.IsDeleted == false).ToList();
 
-            foreach ( var order in orders)
+            foreach (var order in orders)
             {
                 ordersId.Add(order.ExchangeOrderId);
             }
@@ -428,18 +456,24 @@ namespace BarterExchange.Data.Classes
             foreach (var o in ordersList)
             {
                 var val = 0;
-                var list = new List<ExchangeOrder>();
+                var list = new List<OrderValue>();
                 foreach(var id in o)
                 {
-                    var ord = GetExchangeOrderById(id);
-                    list.Add(ord);
-                    var itemType = GetItemTypeById(ord.ItemTypeId);
-                    val += itemType.Value;
+                    var ordValue = userOrderValues.Where(x => x.OrderId == id).FirstOrDefault();
+                    list.Add(ordValue);
+                    val += ordValue.Value;
                 }
 
                 if (val * (1 - VALUE_PROCENT) <= value && val * (1 + VALUE_PROCENT) >= value)
                 {
-                    readyOrders.Add(list);
+                    var orderList = new List<ExchangeOrder>();
+
+                    foreach(var oVal in list)
+                    {
+                        orderList.Add(GetExchangeOrderById(oVal.OrderId));
+                    }
+
+                    readyOrders.Add(orderList);
                 }
             }
 
