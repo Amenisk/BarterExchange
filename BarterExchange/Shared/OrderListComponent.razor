@@ -6,25 +6,37 @@
 @inject ExchangeOrderService ExchangeOrderService
 @inject ISnackbar Snackbar
 
-@if(!IsCreatedOrders && !IsOfferOrders && !IsTargetOrder)
+@if (RecomendedOrders == null)
 {
     <div class="card">
         <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
             <MudTextField @bind-Value="@searchText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск"
                       Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="Search" />
-            @if(UserService.CurrentUser != null && ExchangeOrderService.CheckAvailabilityExchangeOrders(UserService.CurrentUser.Email))
+            @if (UserService.CurrentUser != null && ExchangeOrderService.CheckAvailabilityExchangeOrders(UserService.CurrentUser.Email) && !IsOfferOrders && !IsTargetOrder)
             {
                 <MudCheckBox T="bool" Label="Рекомендуемые обмены" LabelPosition="LabelPosition.Start" Color="Color.Secondary" CheckedChanged="@(e => GetRecomendedOrders((bool)e))"></MudCheckBox>
             }         
         </div>
     </div>
 }
+
+@if (RecomendedOrders != null)
+{
+    <div class="card">
+        <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
+            <MudTextField @bind-Value="@searchRecText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск"
+                      Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="SearchInRecommendedOrders" />
+            <MudButton OnClick="FilterOrders" Variant="Variant.Outlined" Color="Color.Primary">Фильтр объявлений</MudButton>
+        </div>
+    </div>
+}
+
 @if(RecomendedOrders == null)
 {
     <div class="card-group" style="width: 100%; margin: 10px 0 0 0">
         @foreach (var exch in AllExchangeOrders.Skip((_selected - 1) * 16).Take(16).ToList())
         {
-            <MudCard Outlined="true" style="width: 280; margin: 2%">
+            <MudCard Outlined="true" style="width: 280px; margin: 2%">
                 <MudCardContent Class="d-flex justify-center align-center">
                     <MudImage Src=@("Images/" + @exch.PhotoName) Elevation="25" Class="rounded-lg" Style="width: 250px; height: 250px" />
                 </MudCardContent>
@@ -38,11 +50,11 @@
 else
 {
     <div class="card-group" style="width: 100%; margin: 10px 0 0 0">
-        @foreach (var exch in RecomendedOrders)
+        @foreach (var exch in SortRecommendedOrders.Skip((_selected - 1) * 16).Take(16).ToList())
         {
             if(exch.Count == 1)
             {
-                <MudCard Outlined="true" style="width: 280; margin: 2%">
+                <MudCard Outlined="true" style="width: 280px; margin: 2%">
                     <MudCardContent>
                         <MudImage Src=@("Images/" + @exch.First().PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
                     </MudCardContent>
@@ -53,7 +65,7 @@ else
             }
             else
             {
-                    <MudCard Outlined="true" style="width: 280; margin: 2%">
+                    <MudCard Outlined="true" style="width: 280px; margin: 2%">
                         @foreach (var o in exch)
                         {
                             <MudCardActions style="display: flex; justify-content:center">
@@ -75,7 +87,7 @@ else
 else
 {
     <div class="d-flex flex-column align-center" style="margin: 3%">
-        <MudPagination BoundaryCount="2" MiddleCount="5" Count="@(RecomendedOrders.Count() / 16 + GetNumber(RecomendedOrders.Count()))" @bind-Selected="@_selected" Class="mt-4" />
+        <MudPagination BoundaryCount="2" MiddleCount="5" Count="@(SortRecommendedOrders.Count() / 16 + GetNumber(RecomendedOrders.Count()))" @bind-Selected="@_selected" Class="mt-4" />
     </div>
 }
 
@@ -86,13 +98,17 @@ else
     public List<ExchangeOrder> AllExchangeOrders { get; set; }
     [Parameter]
     public List<List<ExchangeOrder>> RecomendedOrders { get; set; }
+    public List<List<ExchangeOrder>> SortRecommendedOrders { get; set; }
     [Parameter]
     public bool IsCreatedOrders { get; set; }
     [Parameter]
     public bool IsOfferOrders { get; set; }
     [Parameter]
     public bool IsTargetOrder{ get; set; }
+    [Parameter]
+    public bool IsFilterOrders { get; set; }
     string searchText = "";
+    string searchRecText = "";
     bool isRecomendedOrders;
     public List<ExchangeOrder> removedOrders = new List<ExchangeOrder>();
     int _selected = 1;
@@ -108,6 +124,10 @@ else
         bool isRemoved;
         UserService.ReloadVipLevel();
 
+        //if (ExchangeOrderService.FilterOrders.Count != 0 && RecomendedOrders != null)
+        //{
+        //    SortRecommendedOrders = ExchangeOrderService.GetRecommendedOrdersByFilter(RecomendedOrders);
+        //}
 
         if(RecomendedOrders == null)
         {
@@ -143,7 +163,11 @@ else
                 {
                     AllExchangeOrders.Remove(r);
                 }
-            }         
+            } 
+        }
+        else
+        {
+            SortRecommendedOrders = RecomendedOrders;
         }
     }
 
@@ -163,7 +187,6 @@ else
     {
         if(IsOfferOrders)
         {
-
             if(ExchangeOrderService.IsSenderOrders)
             {
                 ExchangeOrderService.SenderOrders.Add(ExchangeOrderService.GetExchangeOrder(id));
@@ -176,6 +199,14 @@ else
             }
 
             Navigation.NavigateTo("/main-offer");
+            return;
+        }
+
+        if(IsFilterOrders)
+        {
+            ExchangeOrderService.FilterOrders.Add(ExchangeOrderService.GetExchangeOrder(id));
+            Snackbar.Add("Предмет успешно добавлен в фильтр рекомендованных обменов!", Severity.Success);
+            Navigation.NavigateTo("/exchange-order-filter");
             return;
         }
 
@@ -213,7 +244,7 @@ else
             if (ExchangeOrderService.IsSenderOrders)
             {
                 ExchangeOrderService.SenderOrders.Add(ExchangeOrderService.GetExchangeOrder(o.ExchangeOrderId));
-                Snackbar.Add("Предмет/ы успешно добавлен в список обмена!", Severity.Success);
+                Snackbar.Add("Предметы успешно добавлен в список обмена!", Severity.Success);
             }
             else
             {
@@ -225,9 +256,21 @@ else
         }    
     }
 
+    private void SearchInRecommendedOrders()
+    {
+        if(searchRecText != "")
+        {
+            SortRecommendedOrders = ExchangeOrderService.GetRecommendedOrdersBySearch(searchRecText, RecomendedOrders);
+        }
+        else
+        {
+            SortRecommendedOrders = RecomendedOrders;
+        }
+    }
+
     private void Search()
     {
-        if(searchText != "")
+        if (searchText != "")
         {
             AllExchangeOrders = ExchangeOrderService.GetListExchangeOrdersBySearch(searchText);
         }
@@ -258,5 +301,10 @@ else
             isRecomendedOrders = false;
             AllExchangeOrders = ExchangeOrderService.GetAllExchangeOrders();
         }
+    }
+
+    private void FilterOrders()
+    {
+        Navigation.NavigateTo("/exchange-order-filter");
     }
 }

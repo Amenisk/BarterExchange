@@ -1,0 +1,14 @@
+﻿@page "/select-filter-order"
+
+@inject ExchangeOrderService ExchangeOrderService
+@inject UserService UserService
+
+@if (UserService.IsAuthorized())
+{
+    <OrderListComponent AllExchangeOrders="@ExchangeOrderService.GetFilterOrders(UserService.CurrentUser.Email)" IsFilterOrders="true"></OrderListComponent>
+}
+else
+{
+    <NotAuthorizedComponent></NotAuthorizedComponent>
+}
+

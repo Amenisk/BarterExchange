@@ -18,15 +18,15 @@
 @if(!UserService.IsAuthorized() || UserService.CurrentUser.Role == "User")
 {
     <MudPaper Width="250px" Class="py-3 bg-primary" Elevation="0" Height="100%">
-        <MudNavMenu Dense="true" Color="Color.Info">
-            <MudNavLink Href="/make-order" style="color: white" Icon="@Icons.Material.Filled.Add" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Создать обмен</MudNavLink>
-            <MudNavGroup Title="Обмены" Expanded="false" Style="color: white" Icon="@Icons.Material.Filled.Description" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">
-                <MudNavLink Href="/created-orders" Style="color: white" Icon="@Icons.Material.Filled.Create" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Созданные объявления</MudNavLink>
-                <MudNavLink Href="/conducted-offers" Style="color: white" Icon="@Icons.Material.Filled.CheckBox" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Проведенные обмены</MudNavLink>
-                <MudNavLink Href="/created-offers" Style="color: white" Icon="@Icons.Material.Filled.CallMade" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Созданные предложения</MudNavLink>
-                <MudNavLink Href="/recieved-offers" Style="color: white" Icon="@Icons.Material.Filled.CallReceived" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Полученные предложения</MudNavLink>
+        <MudNavMenu Dense="true" Color="Color.Info" @onclick="ClearExchangeOrderService">
+                <MudNavLink Href="/make-order" style="color: white" Icon="@Icons.Material.Filled.Add" IconColor="Color.Inherit">Создать обмен</MudNavLink>
+            <MudNavGroup Title="Обмены" Style="color: white" Icon="@Icons.Material.Filled.Description" IconColor="Color.Inherit">
+                <MudNavLink Href="/created-orders" Style="color: white" Icon="@Icons.Material.Filled.Create" IconColor="Color.Inherit">Созданные объявления</MudNavLink>
+                <MudNavLink Href="/conducted-offers" Style="color: white" Icon="@Icons.Material.Filled.CheckBox" IconColor="Color.Inherit">Проведенные обмены</MudNavLink>
+                <MudNavLink Href="/created-offers" Style="color: white" Icon="@Icons.Material.Filled.CallMade" IconColor="Color.Inherit">Созданные предложения</MudNavLink>
+                <MudNavLink Href="/recieved-offers" Style="color: white" Icon="@Icons.Material.Filled.CallReceived" IconColor="Color.Inherit">Полученные предложения</MudNavLink>
             </MudNavGroup>
-            <MudNavLink Href="/main-targets" style="color: white" Icon="@Icons.Material.Filled.PlaylistAddCheck" IconColor="Color.Inherit" OnClick="ClearExchangeOrderService">Цели</MudNavLink>
+            <MudNavLink Href="/main-targets" style="color: white" Icon="@Icons.Material.Filled.PlaylistAddCheck" IconColor="Color.Inherit">Цели</MudNavLink>
         </MudNavMenu>
     </MudPaper>
 }

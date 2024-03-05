@@ -85,6 +85,7 @@ else
     private void OpenOrderPage(int id)
     {
         Navigation.NavigateTo("/order");
+        ExchangeOrderService.ChangeCurrentExchangeOrder(id);
     }
 
     private void SenderOfferExchange()

@@ -127,7 +127,11 @@ else
     {
         if(!readOnly)
         {   
-            if (UserService.CurrentUser.Name != name || UserService.CurrentUser.Surname != surname 
+            if(name == "" || surname == "" || password == "")
+            {
+                Snackbar.Add("Заполните все поля!", Severity.Error);
+            }
+        if (UserService.CurrentUser.Name != name || UserService.CurrentUser.Surname != surname 
                 || UserService.CurrentUser.Password != UserService.EncodeDecrypt(password, Storage.Key))
             {
                 EncryptData();

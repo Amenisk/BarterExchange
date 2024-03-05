@@ -12,6 +12,7 @@ namespace BarterExchange.Data.Services
         public ExchangeOrderOffer SelectedOffer { get; set; }
         public List<ExchangeOrder> SenderOrders { get; set; } = new List<ExchangeOrder>();
         public List<ExchangeOrder> RecepientOrders { get; set; } = new List<ExchangeOrder>();
+        public List<ExchangeOrder> FilterOrders { get; set; } = new List<ExchangeOrder>();
 
         public int GetLastId()
         {
@@ -232,7 +233,61 @@ namespace BarterExchange.Data.Services
             IsSenderOrders = false;
             ClearLists();
             CurrentExchangeOrder = null;
+            ValueItemType = 0;
             CurrentTarget = null;
+        }
+
+        public List<List<ExchangeOrder>> GetRecommendedOrdersBySearch(string search, List<List<ExchangeOrder>> orders)
+        {
+            var sortOrders = new List<List<ExchangeOrder>>();
+
+            foreach (var orderList in orders)
+            {      
+                    if(Database.CheckNameRecommendedOrders(search, orderList))
+                    {
+                        sortOrders.Add(orderList);
+                    }
+            }
+
+            return sortOrders;
+        }
+
+        public List<ExchangeOrder> GetFilterOrders(string email)
+        {
+            return Database.GetFilterOrders(email, FilterOrders);
+        }
+
+        public List<List<ExchangeOrder>> GetRecommendedOrdersByFilter(List<List<ExchangeOrder>> recOrders)
+        {
+            var returnOrders = new List<List<ExchangeOrder>>();
+            var isExistFilterOrders = true;
+
+            foreach(var orderList in recOrders)
+            {
+                isExistFilterOrders = true;
+                foreach(var order in orderList)
+                {
+                    foreach(var filterOrder in FilterOrders)
+                    {
+                        if(filterOrder.ExchangeOrderId != order.ExchangeOrderId)
+                        {
+                            isExistFilterOrders=false;
+                            break;
+                        }
+                    }
+                    if(!isExistFilterOrders)
+                    {
+                        break;
+                    }
+                }
+
+                if(isExistFilterOrders)
+                {
+                    returnOrders.Add(orderList);
+                }
+            }
+
+            return returnOrders;
         }
     }
 }

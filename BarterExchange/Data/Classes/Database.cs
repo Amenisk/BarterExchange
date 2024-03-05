@@ -326,7 +326,7 @@ namespace BarterExchange.Data.Classes
             bool isContinue;
 
 
-            foreach (var item in collection.Find(x => x.Title != null).ToList())
+            foreach (var item in collection.Find(x => !x.IsDeleted).ToList())
             {
                 isContinue = false;
 
@@ -367,6 +367,50 @@ namespace BarterExchange.Data.Classes
             }
 
             return listOrders;
+        }
+
+        public static bool CheckNameRecommendedOrders(string searchText, List<ExchangeOrder> recOrders)
+        {
+            var itemTypesList = GetAllItemTypes();
+            var itemCategoriesList = GetAllItemCategories();
+            bool isContinue = false;
+
+
+            foreach (var item in recOrders)
+            {
+                if (item.Title.ToLower().Contains(searchText.ToLower()))
+                {
+                    isContinue = true;
+                    break;
+                }
+
+                foreach (var itemType in itemTypesList)
+                {
+                    if (itemType.Title.ToLower().Contains(searchText.ToLower()))
+                    {
+                        if (itemType.ItemTypeId == item.ItemTypeId)
+                        {
+                            isContinue = true;
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var itemCategory in itemCategoriesList)
+                {
+                    if (itemCategory.Title.ToLower().Contains(searchText.ToLower()))
+                    {
+                        var type = GetItemTypeById(item.ItemTypeId);
+                        if (type.ItemCategoryId == itemCategory.ItemCategoryId)
+                        {
+                            isContinue = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return isContinue;
         }
 
         private static List<OrderValue> GetOrderValues(string userEmail, bool forUser)
@@ -744,6 +788,30 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<ExchangeOrderOffer>("ExchangeOrderOffers");
 
             return collection.Find(x =>  x.ExchangeOfferId == offerId).FirstOrDefault();
+        }
+
+        public static List<ExchangeOrder> GetFilterOrders(string email, List<ExchangeOrder> filterOrders)
+        {
+            var orders = GetExchangeOrdersByCreatorEmail(email);
+            var removeOrders = new List<ExchangeOrder>();
+
+            foreach(var order in orders)
+            {
+                foreach(var filterOrder in filterOrders)
+                {
+                    if(order.ExchangeOrderId == filterOrder.ExchangeOrderId)
+                    {
+                        removeOrders.Add(order);
+                    }
+                }
+            }
+
+            foreach(var remOrder in removeOrders)
+            {
+                orders.Remove(remOrder);
+            }
+
+            return orders;
         }
     } 
 }
