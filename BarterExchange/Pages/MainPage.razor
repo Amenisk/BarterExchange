@@ -5,3 +5,10 @@
 <OrderListComponent AllExchangeOrders="@ExchangeOrderService.GetAllExchangeOrders()" IsCreatedOrders="false"></OrderListComponent>
 
 
+@code{
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ExchangeOrderService.ClearAll();
+    }
+}

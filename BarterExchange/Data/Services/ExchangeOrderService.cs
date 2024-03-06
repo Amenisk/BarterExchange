@@ -168,6 +168,7 @@ namespace BarterExchange.Data.Services
         {
             SenderOrders.Clear();
             RecepientOrders.Clear();
+            FilterOrders.Clear();
         }
 
         public string CutName(string name)
@@ -260,21 +261,22 @@ namespace BarterExchange.Data.Services
         public List<List<ExchangeOrder>> GetRecommendedOrdersByFilter(List<List<ExchangeOrder>> recOrders)
         {
             var returnOrders = new List<List<ExchangeOrder>>();
-            var isExistFilterOrders = true;
+            bool isExistFilterOrders = false;
 
             foreach(var orderList in recOrders)
             {
-                isExistFilterOrders = true;
-                foreach(var order in orderList)
+                foreach(var filterOrder in FilterOrders)
                 {
-                    foreach(var filterOrder in FilterOrders)
+                    isExistFilterOrders = false;
+                    foreach (var order in orderList)
                     {
-                        if(filterOrder.ExchangeOrderId != order.ExchangeOrderId)
+                        if(filterOrder.ExchangeOrderId == order.ExchangeOrderId)
                         {
-                            isExistFilterOrders=false;
+                            isExistFilterOrders=true;
                             break;
                         }
                     }
+
                     if(!isExistFilterOrders)
                     {
                         break;

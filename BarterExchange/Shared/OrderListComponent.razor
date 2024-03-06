@@ -12,7 +12,7 @@
         <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
             <MudTextField @bind-Value="@searchText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск"
                       Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="Search" />
-            @if (UserService.CurrentUser != null && ExchangeOrderService.CheckAvailabilityExchangeOrders(UserService.CurrentUser.Email) && !IsOfferOrders && !IsTargetOrder)
+            @if (UserService.CurrentUser != null && ExchangeOrderService.CheckAvailabilityExchangeOrders(UserService.CurrentUser.Email) && !IsOfferOrders && !IsTargetOrder && !IsFilterOrders)
             {
                 <MudCheckBox T="bool" Label="Рекомендуемые обмены" LabelPosition="LabelPosition.Start" Color="Color.Secondary" CheckedChanged="@(e => GetRecomendedOrders((bool)e))"></MudCheckBox>
             }         
@@ -26,7 +26,11 @@
         <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
             <MudTextField @bind-Value="@searchRecText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск"
                       Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="SearchInRecommendedOrders" />
-            <MudButton OnClick="FilterOrders" Variant="Variant.Outlined" Color="Color.Primary">Фильтр объявлений</MudButton>
+            @if(ExchangeOrderService.FilterOrders.Count != 0)
+            {
+                <MudText Color="Color.Primary" Style="margin: 3% 0 3% 0">Кол-во предметов в фильтре: @ExchangeOrderService.FilterOrders.Count</MudText>
+            }
+            <MudButton OnClick="FilterOrders" Variant="Variant.Outlined" Color="Color.Primary" Style="margin: 2% 0 2% 1%">Фильтр объявлений</MudButton>
         </div>
     </div>
 }
@@ -124,11 +128,6 @@ else
         bool isRemoved;
         UserService.ReloadVipLevel();
 
-        //if (ExchangeOrderService.FilterOrders.Count != 0 && RecomendedOrders != null)
-        //{
-        //    SortRecommendedOrders = ExchangeOrderService.GetRecommendedOrdersByFilter(RecomendedOrders);
-        //}
-
         if(RecomendedOrders == null)
         {
             foreach (var e in AllExchangeOrders)
@@ -168,6 +167,11 @@ else
         else
         {
             SortRecommendedOrders = RecomendedOrders;
+        }
+
+        if (ExchangeOrderService.FilterOrders.Count != 0 && RecomendedOrders != null)
+        {
+            SortRecommendedOrders = ExchangeOrderService.GetRecommendedOrdersByFilter(RecomendedOrders);
         }
     }
 
