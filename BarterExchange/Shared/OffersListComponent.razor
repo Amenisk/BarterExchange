@@ -3,7 +3,14 @@
 @inject UserService UserService
 @inject ISnackbar Snackbar
 
-<MudTable Items="@Offers" Hover="true" LoadingProgressColor="Color.Info" Style="width: 60%; margin: 0 20% 0 20%">
+<div class="card" style="margin: 2%">
+    <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
+        <MudTextField @bind-Value="@searchText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск"
+                      Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="Search" />
+    </div>
+</div>
+
+<MudTable Items="@sortOffers" Hover="true" LoadingProgressColor="Color.Info" Style="width: 60%; margin: 0 20% 0 20%">
     <HeaderContent>
         <MudTh>Отдаёте</MudTh>
         <MudTh></MudTh>
@@ -148,6 +155,14 @@
     public bool IsRecieved { get; set; }
     [Parameter]
     public List<ExchangeOrderOffer> Offers { get; set; }
+    List<ExchangeOrderOffer> sortOffers { get; set; }
+    string searchText = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        sortOffers = Offers;
+    }
 
 
     private void OpenOrderPage(int id)
@@ -168,5 +183,17 @@
         ExchangeOrderService.RejectExchangeOffer(offer.ExchangeOfferId);
         Navigation.NavigateTo("/main");
         Snackbar.Add("Предложение обмена успешно отклонено!", Severity.Success);
+    }
+
+    private void Search()
+    {
+        if(searchText != "")
+        {
+            sortOffers = ExchangeOrderService.SearchOffers(searchText, Offers);
+        }
+        else
+        {
+            sortOffers = Offers;
+        }
     }
 }

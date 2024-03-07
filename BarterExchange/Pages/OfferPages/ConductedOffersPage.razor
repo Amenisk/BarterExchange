@@ -6,9 +6,16 @@
 @inject ISnackbar Snackbar
 @inject UserService UserService
 
+<div class="card" style="margin: 2%">
+    <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start">
+        <MudTextField @bind-Value="@searchText" HelperText="Поиск по названию объявления, категории и типу предмета" Label="Поиск"
+                      Style="width: 50%" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="Search" />
+    </div>
+</div>
+
 @if (UserService.IsAuthorized())
 {
-    <MudTable Items="@conductedOffers" Hover="true" @bind-SelectedItem="selectedOffer" LoadingProgressColor="Color.Info" Style="width: 50%; margin: 0 25% 0 25%" @onclick="SelectOffer">
+    <MudTable Items="@sortConductedOffers" Hover="true" @bind-SelectedItem="selectedOffer" LoadingProgressColor="Color.Info" Style="width: 50%; margin: 0 25% 0 25%" @onclick="SelectOffer">
         <HeaderContent>
             <MudTh>Отдали</MudTh>
             <MudTh></MudTh>
@@ -124,7 +131,10 @@ else
 
 @code {
     public List<ExchangeOrderOffer> conductedOffers { get; set; }
+    public List<ExchangeOrderOffer> sortConductedOffers { get; set; }
     ExchangeOrderOffer selectedOffer;
+    string searchText = "";
+
 
     protected override void OnInitialized()
     {
@@ -141,6 +151,8 @@ else
         {
             conductedOffers = ExchangeOrderService.GetAvailableOrdersId(ExchangeOrderService.CurrentTarget.TargetId);
         }
+
+        sortConductedOffers = conductedOffers;
     }
 
     private void OpenOrderPage(int id)
@@ -156,6 +168,18 @@ else
             ExchangeOrderService.SelectedOffer = selectedOffer;
             Navigation.NavigateTo("/target");
             Snackbar.Add("Обмен успешно добавлен в цель!", Severity.Success);
+        }
+    }
+
+    private void Search()
+    {
+        if (searchText != "")
+        {
+            sortConductedOffers = ExchangeOrderService.SearchOffers(searchText, conductedOffers);
+        }
+        else
+        {
+            sortConductedOffers = conductedOffers;
         }
     }
 }

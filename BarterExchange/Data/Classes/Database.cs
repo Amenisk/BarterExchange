@@ -813,5 +813,18 @@ namespace BarterExchange.Data.Classes
 
             return orders;
         }
+
+        public static List<ExchangeOrder> GetOrderListByIdList(List<int> idList)
+        {
+            var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
+            var orderList = new List<ExchangeOrder>();
+
+            foreach(var id in idList)
+            {
+                orderList.Add(collection.Find(x => x.ExchangeOrderId == id).FirstOrDefault());
+            }
+
+            return orderList;
+        }
     } 
 }

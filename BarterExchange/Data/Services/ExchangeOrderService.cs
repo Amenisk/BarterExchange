@@ -1,4 +1,5 @@
 ﻿using BarterExchange.Data.Classes;
+using System;
 
 namespace BarterExchange.Data.Services
 {
@@ -290,6 +291,68 @@ namespace BarterExchange.Data.Services
             }
 
             return returnOrders;
+        }
+
+        public List<ExchangeOrderOffer> SearchOffers(string searchText, List<ExchangeOrderOffer> offers)
+        {
+            var returnOffers = new List<ExchangeOrderOffer>();
+            bool isContinue;
+
+            foreach(var offer in offers)
+            {
+                isContinue = false;
+                if (CheckOfferSearch(searchText, Database.GetOrderListByIdList(offer.SenderExchangeOrdersId)))
+                {
+                    returnOffers.Add(offer);
+                    isContinue = true;
+                }
+
+                if(!isContinue && CheckOfferSearch(searchText, Database.GetOrderListByIdList(offer.RecipientExchangeOrdersId)))
+                {
+                    returnOffers.Add(offer);
+                }
+            }
+
+            return returnOffers;
+        }
+
+        private bool CheckOfferSearch(string searchText, List<ExchangeOrder> orders)
+        {
+            var itemTypeList = Database.GetAllItemTypes();
+            var itemCategoryList = Database.GetAllItemCategories();
+
+            foreach (var item in orders)
+            {
+                if (item.Title.ToLower().Contains(searchText.ToLower()))
+                {
+                    return true;
+                }
+
+                foreach (var itemType in itemTypeList)
+                {
+                    if (itemType.Title.ToLower().Contains(searchText.ToLower()))
+                    {
+                        if (itemType.ItemTypeId == item.ItemTypeId)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                foreach (var itemCategory in itemCategoryList)
+                {
+                    if (itemCategory.Title.ToLower().Contains(searchText.ToLower()))
+                    {
+                        var type = Database.GetItemTypeById(item.ItemTypeId);
+                        if (type.ItemCategoryId == itemCategory.ItemCategoryId)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
