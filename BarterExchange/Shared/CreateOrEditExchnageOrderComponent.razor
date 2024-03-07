@@ -99,6 +99,8 @@ else
             titleItemCategory = ItemService.GetItemCategoryById(ItemService.GetItemTypeById(Order.ItemTypeId).ItemCategoryId).Title;
             titleItemType = ItemService.GetItemTypeById(Order.ItemTypeId).Title;
             contactInformation = Order.ContactInformation;
+            itemTypesTitles = ItemService.GetTitlesItemTypesByCategory
+            (ItemService.GetItemCategoryByTitle(titleItemCategory).ItemCategoryId);
         }
     }
 
