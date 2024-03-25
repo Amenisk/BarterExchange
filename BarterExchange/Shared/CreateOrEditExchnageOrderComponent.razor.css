@@ -1,0 +1,13 @@
+﻿@media only screen and (min-width: 601px) {
+    .card-continer {
+        width: 40%;
+        margin: 100px 30% 0 30%
+    }
+}
+
+@media only screen and (max-width:600px) {
+    .card-continer {
+        width: 80%;
+        margin: 100px 10% 0 10%
+    }
+}

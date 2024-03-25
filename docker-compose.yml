@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+    app:
+        container_name: app
+        build:
+          context: .
+        restart: on-failure
+        ports:
+          - "1337:80"
+        environment:
+          ASPNETCORE_URLS: http://+;
+          ASPNETCORE_ENVIRONMENT: Docker
+          TZ: Europe/Moscow
+        stdin_open: true
+        tty: true 

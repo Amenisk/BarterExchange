@@ -10,50 +10,52 @@
 {
     <MudCard Outlined="true">
         <MudCardContent>
-            <MudTable @bind-SelectedItem="@selectedTarget" Items="@Targets" Hover="true" T="Target" LoadingProgressColor="Color.Info" Style="width: 60%; margin: 0 20% 0 20%" >
-                <HeaderContent>
-                    <MudTh>Начальный предмет</MudTh>
-                    <MudTh>Дата начала</MudTh>
-                    <MudTh>Цель</MudTh>
-                    <MudTh>Дата окончания</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd style="width: 280px; margin: 2%">
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToTargetPage(context)">@ExchangeOrderService.CutName(context.StartOrder.Title)</MudButton>
-                    </MudTd>
-                    <MudTd style="width: 280px; margin: 2%">
-                        <MudTextField Value="context.StartDate.ToShortDateString()" ReadOnly="true" Variant="Variant.Text"></MudTextField>
-                    </MudTd>
-                    <MudTd style="width: 280px; margin: 2%">
-                        @if(changeTarget == null || changeTarget != context)
-                        {
-                            <MudTextField Value="context.TargetNameItem" ReadOnly="true" Variant="Variant.Text" />
-                        }
-                        else 
-                        {
-                            <MudTextField @bind-Value="@newTargetItemName" ReadOnly="false" Variant="Variant.Text" />
-                        }
-                    </MudTd>
-                    <MudTd style="width: 280px; margin: 2%">
-                        @if(context.EndDate != DateTime.MinValue)
-                        {
-                            <MudTextField Value="context.EndDate.ToShortDateString()" ReadOnly="true" Variant="Variant.Text" />
-                        }                      
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
+            <div class="table-container">
+                <MudTable @bind-SelectedItem="@selectedTarget" Items="@Targets" Hover="true" T="Target" LoadingProgressColor="Color.Info">
+                    <HeaderContent>
+                        <MudTh>Начальный предмет</MudTh>
+                        <MudTh>Дата начала</MudTh>
+                        <MudTh>Цель</MudTh>
+                        <MudTh>Дата окончания</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd style="width: 280px; margin: 2%" DataLabel="Начальный предмет">
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => NavigateToTargetPage(context)">@ExchangeOrderService.CutName(context.StartOrder.Title)</MudButton>
+                        </MudTd>
+                        <MudTd style="width: 280px; margin: 2%" DataLabel="Дата начала">
+                            <MudTextField Value="context.StartDate.ToShortDateString()" ReadOnly="true" Variant="Variant.Text"></MudTextField>
+                        </MudTd>
+                        <MudTd style="width: 280px; margin: 2%" DataLabel="Цель">
+                            @if (changeTarget == null || changeTarget != context)
+                            {
+                                <MudTextField Value="context.TargetNameItem" ReadOnly="true" Variant="Variant.Text" />
+                            }
+                            else
+                            {
+                                <MudTextField @bind-Value="@newTargetItemName" ReadOnly="false" Variant="Variant.Text" />
+                            }
+                        </MudTd>
+                        <MudTd style="width: 280px; margin: 2%" DataLabel="Дата конца">
+                            @if (context.EndDate != DateTime.MinValue)
+                            {
+                                <MudTextField Value="context.EndDate.ToShortDateString()" ReadOnly="true" Variant="Variant.Text" />
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>            
             </MudCardContent>
-        <MudCardActions style="display: flex; justify-content:center; margin: 3% 0 0 0">         
-            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="OpenCreateTargetPage">Создать цель</MudButton>
-            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="ChangeTargetItem">@changeText</MudButton>
-            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="DeleteTarget">Удалить цель</MudButton>     
+        <MudCardActions style="display: flex; justify-content:center; margin: 3% 0 0 0">
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="OpenCreateTargetPage"><div class="button-name">Создать цель</div></MudButton>
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="ChangeTargetItem"><div class="button-name">@changeText</div></MudButton>
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="DeleteTarget"><div class="button-name">Удалить цель</div></MudButton>     
             @if(selectedTarget == null || selectedTarget.EndDate == DateTime.MinValue)
             {
-                <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="FinalTarget">Завершить цель</MudButton>
+                <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="FinalTarget"><div class="button-name">Завершить цель</div></MudButton>
             }
             else
             {
-                <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="FinalTarget">Отменить завершение</MudButton>
+                <MudButton Variant="Variant.Outlined" Style="margin: 5px" Color="Color.Primary" OnClick="FinalTarget"><div class="button-name">Отменить завершение</div></MudButton>
             }        
         </MudCardActions>
     </MudCard>

@@ -9,9 +9,6 @@
         <div style="float: left">
             <a class="navbar-brand" href="main" @onclick="ClearExchangeOrderService" style="float: left">Бартерный обмен</a>
         </div>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
     </div>
 </div>
 
@@ -27,6 +24,7 @@
                 <MudNavLink Href="/recieved-offers" Style="color: white" Icon="@Icons.Material.Filled.CallReceived" IconColor="Color.Inherit">Полученные предложения</MudNavLink>
             </MudNavGroup>
             <MudNavLink Href="/main-targets" style="color: white" Icon="@Icons.Material.Filled.PlaylistAddCheck" IconColor="Color.Inherit">Цели</MudNavLink>
+            <MudNavLink Href="/profile" style="color: white" Icon="@Icons.Material.Filled.Badge" IconColor="Color.Inherit">Профиль</MudNavLink>
         </MudNavMenu>
     </MudPaper>
 }
@@ -36,6 +34,7 @@ else
         <MudNavMenu Dense="true" Color="Color.Info">
             <MudNavLink Href="/create-item-category" OnClick="ClearExchangeOrderService" style="color: white" Icon="@Icons.Material.Filled.ViewList" IconColor="Color.Inherit">Категории предметов</MudNavLink>
             <MudNavLink Href="/create-item-type" OnClick="ClearExchangeOrderService" style="color: white" Icon="@Icons.Material.Filled.ListAlt" IconColor="Color.Inherit">Типы предметов</MudNavLink>
+            <MudNavLink Href="/profile" style="color: white" Icon="@Icons.Material.Filled.Badge" IconColor="Color.Inherit">Профиль</MudNavLink>
         </MudNavMenu>
     </MudPaper>
 }

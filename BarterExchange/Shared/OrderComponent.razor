@@ -7,10 +7,10 @@
 
 <MudGrid>
     <MudItem md="12" sm="12">
-        <MudText Typo="Typo.h3">@order.Title</MudText>
+        <MudText><div class="item-name">@order.Title</div></MudText>
     </MudItem>
-    <MudItem lg="4" md="6" sm="12">
-        <MudImage Src=@("Images/" + order.PhotoName) Elevation="25" Class="rounded-lg" Width="500" Alt="@order.Title" />
+    <MudItem lg="4" md="6" sm="12" Class="image">
+            <MudImage Src=@("Images/" + order.PhotoName) Elevation="25" Class="rounded-lg" Style="width: 100%" Alt="@order.Title" />     
     </MudItem>
     <MudItem Style="margin:auto" lg="5" md="6" sm="12">
         <MudPaper Class="pa-4">

@@ -17,60 +17,67 @@
         <MudTh>Получаете</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd style="width: 280px; margin: 2%">
-            <MudCard Outlined="true">
-                @if (!IsRecieved)
-                {
-                    @if (context.SenderExchangeOrdersId.Count() == 1)
+        <MudTd >
+            <div class="item-card">
+                <MudCard Outlined="true">
+                    @if (!IsRecieved)
                     {
-                        <MudCardContent>
-                                <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />               
-                        </MudCardContent>
-                        <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrdersId.First())">@ExchangeOrderService.CutName(@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).Title)</MudButton>
-                        </MudCardActions>
-                    }
-                    else
-                    {
-                        @foreach(var s in context.SenderExchangeOrdersId)
+                        @if (context.SenderExchangeOrdersId.Count() == 1)
                         {
+                            <MudCardContent Class="d-flex justify-center align-center">
+                                <div class="image">
+                                    <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Style="width: 100%; height: 100%" />
+                                </div>
+                            </MudCardContent>
                             <MudCardActions style="display: flex; justify-content:center">
-                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.CutName(@ExchangeOrderService.GetExchangeOrder(s).Title)</MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrdersId.First())"><div class="item-name">@ExchangeOrderService.CutName(@ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).Title)</div></MudButton>
                             </MudCardActions>
                         }
+                        else
+                        {
+                            @foreach(var s in context.SenderExchangeOrdersId)
+                            {
+                                <MudCardActions style="display: flex; justify-content:center">
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)"><div class="item-name">@ExchangeOrderService.CutName(@ExchangeOrderService.GetExchangeOrder(s).Title)</div></MudButton>
+                                </MudCardActions>
+                            }
                         
-                    }       
-                }
-                else
-                {
-                    @if (context.RecipientExchangeOrdersId.Count() == 1)
-                    {
-                        <MudCardContent>
-                            <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                        </MudCardContent>
-                        <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrdersId.First())">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).Title)</MudButton>
-                        </MudCardActions>
+                        }       
                     }
                     else
                     {
-                        @foreach (var s in context.RecipientExchangeOrdersId)
+                        @if (context.RecipientExchangeOrdersId.Count() == 1)
                         {
+                            <MudCardContent Class="d-flex justify-center align-center">
+                                <div class="image">
+                                    <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Style="width: 100%; height: 100%" />
+                                </div>
+                            </MudCardContent>
                             <MudCardActions style="display: flex; justify-content:center">
-                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrdersId.First())"><div class="item-name">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).Title)</div></MudButton>
                             </MudCardActions>
                         }
-
+                        else
+                        {
+                            @foreach (var s in context.RecipientExchangeOrdersId)
+                            {
+                                <MudCardActions style="display: flex; justify-content:center">
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)"><div class="item-name">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</div></MudButton>
+                                </MudCardActions>
+                            }
+                        }
                     }
-                }
-            </MudCard>
+                </MudCard>
+            </div>
         </MudTd>
         <MudTd Style="display: flex; justify-content:center">
             @if (!IsRecieved)
             {
                 <div>
                     <div style="display: flex; justify-content:center">
-                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 120px 0 0 0" />
+                        <div class="arrow">
+                            <MudImage Src="Images/rightArrow.png" Height="50" />
+                        </div>           
                     </div>
                     @if(!context.IsConducted)
                     {
@@ -84,7 +91,9 @@
             {
                 <div>
                     <div style="display: flex; justify-content:center">
-                        <MudImage Src="Images/rightArrow.png" Height="50" Style="margin: 120px 0 0 0" />
+                        <div class="arrow">
+                            <MudImage Src="Images/rightArrow.png" Height="50" />
+                        </div>
                     </div>
                     <div>
                         <button class="btn btn-primary" @onclick=@(() => AcceptOffer(context)) style="margin: 15px 0 0 0">Принять обмен</button>
@@ -94,52 +103,57 @@
             }
 
         </MudTd>
-        <MudTd style="width: 280px; margin: 2%">
-            <MudCard Outlined="true">
-                @if (!IsRecieved)
-                {
-                    @if (context.RecipientExchangeOrdersId.Count() == 1)
+        <MudTd >
+            <div class="item-card">
+                <MudCard Outlined="true">
+                    @if (!IsRecieved)
                     {
-                        <MudCardContent>
-                            <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                        </MudCardContent>
-                        <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrdersId.First())">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).Title)</MudButton>
-                        </MudCardActions>
+                        @if (context.RecipientExchangeOrdersId.Count() == 1)
+                        {
+                            <MudCardContent Class="d-flex justify-center align-center">
+                                <div class="image">
+                                    <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Style="width: 100%; height: 100%" />
+                                </div>
+                            </MudCardContent>
+                            <MudCardActions style="display: flex; justify-content:center">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.RecipientExchangeOrdersId.First())"><div class="item-name">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(context.RecipientExchangeOrdersId.First()).Title)</div></MudButton>
+                            </MudCardActions>
+                        }
+                        else
+                        {
+                            @foreach (var s in context.RecipientExchangeOrdersId)
+                            {
+                                <MudCardActions style="display: flex; justify-content:center">
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)"><div class="item-name">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</div>s</MudButton>
+                                </MudCardActions>
+                            }
+                        }
                     }
                     else
                     {
-                        @foreach (var s in context.RecipientExchangeOrdersId)
+                        @if (context.SenderExchangeOrdersId.Count() == 1)
                         {
+                            <MudCardContent Class="d-flex justify-center align-center">
+                                <div class="image">
+                                    <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Style="width: 100%; height: 100%" />
+                                </div>
+                            </MudCardContent>
                             <MudCardActions style="display: flex; justify-content:center">
-                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrdersId.First())"><div class="item-name">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).Title)</div></MudButton>
                             </MudCardActions>
                         }
-                    }
-                }
-                else
-                {
-                    @if (context.SenderExchangeOrdersId.Count() == 1)
-                    {
-                        <MudCardContent>
-                            <MudImage Src=@("Images/" + @ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).PhotoName) Elevation="25" Class="rounded-lg" Width="250" Height="250" />
-                        </MudCardContent>
-                        <MudCardActions style="display: flex; justify-content:center">
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(context.SenderExchangeOrdersId.First())">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(context.SenderExchangeOrdersId.First()).Title)</MudButton>
-                        </MudCardActions>
-                    }
-                    else
-                    {
-                        @foreach (var s in context.SenderExchangeOrdersId)
+                        else
                         {
-                            <MudCardActions style="display: flex; justify-content:center">
-                                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</MudButton>
-                            </MudCardActions>
+                            @foreach (var s in context.SenderExchangeOrdersId)
+                            {
+                                <MudCardActions style="display: flex; justify-content:center">
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenOrderPage(s)"><div class="item-name">@ExchangeOrderService.CutName(ExchangeOrderService.GetExchangeOrder(s).Title)</div></MudButton>
+                                </MudCardActions>
+                            }
                         }
-
                     }
-                }
-            </MudCard>
+                </MudCard>
+            </div>
         </MudTd>
     </RowTemplate>
     <PagerContent>
@@ -163,7 +177,6 @@
         base.OnInitialized();
         sortOffers = Offers;
     }
-
 
     private void OpenOrderPage(int id)
     {

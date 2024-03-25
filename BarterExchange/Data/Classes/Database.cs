@@ -17,8 +17,8 @@ namespace BarterExchange.Data.Classes
     {
         private const double VALUE_PROCENT = 0.1;
         private const int MAX_LEVEL = 3;
-        static MongoClient client = new MongoClient("mongodb://localhost");
-        static IMongoDatabase database = client.GetDatabase("BarterExchangeService");
+        public static MongoClient client;
+        public static IMongoDatabase database;
         public static void SaveUser(User user)
         {
             var collection = database.GetCollection<User>("Users");
@@ -184,13 +184,13 @@ namespace BarterExchange.Data.Classes
             var collection = database.GetCollection<ExchangeOrder>("ExchangeOrders");
             var list = new List<ExchangeOrder>();
 
-            for(int i = MAX_LEVEL; i >= 0; i--)
+            for (int i = MAX_LEVEL; i >= 0; i--)
             {
                 foreach (var order in collection.Find(x => !x.IsDeleted).ToList())
                 {
                     var user = GetUserByEmail(order.CreatorEmail);
 
-                    if(user.VipLevel == i)
+                    if (user.VipLevel == i)
                     {
                         list.Add(order);
                     }

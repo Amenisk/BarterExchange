@@ -49,6 +49,8 @@ namespace BarterExchange.Data.Services
                 list.Add(c.Title);
             }
 
+            list.Sort();
+
             return list;
         }
 
@@ -98,6 +100,8 @@ namespace BarterExchange.Data.Services
             {
                 list.Add(c.Title);
             }
+
+            list.Sort();
 
             return list;
         }

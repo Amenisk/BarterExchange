@@ -1,0 +1,19 @@
+﻿@media only screen and (min-width: 601px) {
+    .image {
+        width: 500px;
+    }
+
+    .item-name{
+        font-size: 64px;
+    }
+}
+
+@media only screen and (max-width:600px) {
+    .image {
+        width: 300px;
+    }
+
+    .item-name {
+        font-size: 32px;
+    }
+}

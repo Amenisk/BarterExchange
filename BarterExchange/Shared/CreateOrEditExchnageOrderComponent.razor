@@ -7,7 +7,7 @@
 
 @if (UserService.IsAuthorized())
 {
-    <div class="card" style="width: 40%; margin: 100px 30% 0 30%">
+    <div class="card card-container">
         <div class="card-header">
             <h3 style="display: flex; justify-content:center">Создание объявление на обмен</h3>
         </div>
@@ -16,7 +16,7 @@
                 <MudTextField @bind-Value="title" Label="Название" Clearable="true" Immediate="true" Variant="Variant.Filled" MaxLength="50"></MudTextField>
             </div>
             <div class="card-body">
-                <MudSelect @bind-Value="titleItemCategory" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                <MudSelect @bind-Value="titleItemCategory" T="string" Label="Выберите категорию предмета обмена" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.CenterRight"
                        Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" SelectedValuesChanged="@ReloadItemTypesList">
                     @foreach (var s in allItemCategoriesTitles)
                     {
@@ -25,7 +25,7 @@
                 </MudSelect>
             </div>
             <div class="card-body">
-                <MudSelect @bind-Value="titleItemType" T="string" Label="Выберите тип предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                <MudSelect @bind-Value="titleItemType" T="string" Label="Выберите тип предмета обмена" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.CenterRight"
                        Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
                     @foreach (var s in itemTypesTitles)
                     {

@@ -8,7 +8,7 @@
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
         <MudTabPanel Text="Создание категории">
-            <div class="card" style="width: 40%; margin: 30px 30% 0 30%">
+            <div class="card card-container">
                 <div class="card-header">
                     <h3 style="display: flex; justify-content:center; align-content: center">Создание категории предмета обмена</h3>
                 </div>
@@ -23,14 +23,14 @@
             </div>
         </MudTabPanel>
         <MudTabPanel Text="Удаление категории">
-            <div class="card" style="width: 40%; margin: 30px 30% 0 30%">
+            <div class="card card-container" >
                 <div class="card-header">
                     <h3 style="display: flex; justify-content:center; align-content: center">Удаление категории предмета обмена</h3>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
                         <div class="card-body">
-                            <MudSelect @bind-Value="titleDeletedItemCategory" T="string" Label="Категория предмета обмена" AnchorOrigin="Origin.CenterLeft" TransformOrigin="Origin.CenterRight"
+                            <MudSelect @bind-Value="titleDeletedItemCategory" T="string" Class="mud-select" Label="Категория предмета обмена" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.CenterRight"
                                    Variant="Variant.Filled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary">
                                 @foreach (var s in allTitlesItemCategories)
                                 {

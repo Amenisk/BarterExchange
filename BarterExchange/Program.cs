@@ -1,7 +1,9 @@
 using BarterExchange.Data;
+using BarterExchange.Data.Classes;
 using BarterExchange.Data.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using MongoDB.Driver;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,8 @@ builder.Services.AddSingleton<FileSystemService>();
 builder.Services.AddSingleton<ExchangeOrderService>();
 builder.Services.AddSingleton<ItemService>();
 builder.Services.AddMudServices();
+Database.client = new MongoClient(builder.Configuration["ConnectionStrings:Mongo"]!);
+Database.database = Database.client.GetDatabase("BarterExchangeService");
 
 var app = builder.Build();
 
